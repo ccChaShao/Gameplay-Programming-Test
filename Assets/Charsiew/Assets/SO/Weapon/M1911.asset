@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d8f33fa44605d947849e8df34799689, type: 3}
+  m_Name: M1911
+  m_EditorClassIdentifier: 
+  id: 1001
+  damage: 8
+  shotGap: -1
+  trigger: 1
+  weaponPrefab: {fileID: 1694449805434718, guid: 6f1a7354265853f44b0ed5e2e43676ad,
+    type: 3}
+  BulletConfig: {fileID: 11400000, guid: 49498b55bc168a64c895199a51e7ae90, type: 2}

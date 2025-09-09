@@ -23,8 +23,13 @@ namespace Gamekit3D
         public float maxTurnSpeed = 1200f;        // How fast Ellen turns when stationary.
         public float idleTimeout = 5f;            // How long before Ellen starts considering random idles.
         public bool canAttack;                    // Whether or not Ellen can swing her staff.
-        
-        [ReadOnly, LabelText("当前角色状态")] public CharacterState currentState;
+
+        #region Charsiew
+
+        public CharacterState currentState;         // 当前状态
+        public AimConfig aimConfig;                 // 瞄准状态配置
+
+        #endregion
 
         public CameraSettings cameraSettings;            // Reference used to determine the camera's direction.
         public MeleeWeapon meleeWeapon;                  // Reference used to (de)activate the staff when attacking. 
@@ -197,20 +202,44 @@ namespace Gamekit3D
             m_Animator.SetFloat(m_HashStateTime, Mathf.Repeat(m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime, 1f));
             m_Animator.ResetTrigger(m_HashMeleeAttack);
 
-            // if (m_Input.Attack && canAttack)
-            // {
-            //     m_Animator.SetTrigger(m_HashMeleeAttack);
-            // }
+            #region Charsiew
 
-            UpdateCharacterAttack();
+            // switch 充当小型状态机区分
+            switch (currentState)
+            {
+                case CharacterState.NormalState:
+                {
+                    // 攻击
+                    bool isInAttack = m_Input.Attack && canAttack;
+                    if (isInAttack)
+                    {
+                        m_Animator.SetTrigger(m_HashMeleeAttack);
+                    }
+                    // 移动
+                    CalculateForwardMovement();
+                    // 水平移动
+                    SetTargetRotation();
+                    if (IsMoveInput && IsOrientationUpdated())
+                    {
+                        UpdateOrientation();
+                    }
+                    // 垂直移动
+                    CalculateVerticalMovement();
+                    break;
+                }
+                case CharacterState.ShotState:
+                {
+                    // 攻击
+                    // ...
+                    // 移动
+                    CalculateAimForwardMovement();
+                    // 垂直移动
+                    CalculateVerticalMovement();
+                    break;
+                }
+            }
 
-            CalculateForwardMovement();
-            CalculateVerticalMovement();
-
-            SetTargetRotation();
-
-            if (IsOrientationUpdated() && IsMoveInput)
-                UpdateOrientation();
+            #endregion
 
             PlayAudio();
 
@@ -220,24 +249,35 @@ namespace Gamekit3D
         }
 
         /// <summary>
-        /// 更新角色攻击
+        /// 更新角色 瞄准模式移动
         /// </summary>
-        private void UpdateCharacterAttack()
+        private void CalculateAimForwardMovement()
         {
-            bool isInAttack = m_Input.Attack && canAttack;
-            if (!isInAttack)
-            {
-                return;
-            }
+            // 获取鼠标输入
+            float mouseX = m_Input.CameraInput.x * aimConfig.mouseSensitivity * Time.fixedDeltaTime;
+            float mouseY = m_Input.CameraInput.y * aimConfig.mouseSensitivity * Time.fixedDeltaTime;
             
-            switch (currentState)
-            {
-                case CharacterState.NormalState:
-                    m_Animator.SetTrigger(m_HashMeleeAttack);
-                    break;
-                case CharacterState.ShotState:
-                    break;
-            }
+            // 朝向
+            transform.Rotate(Vector3.up * mouseX);
+
+            // // 移动方向
+            // m_DesiredForwardSpeed = (m_Input.MoveInput.y * transform.forward + m_Input.MoveInput.x * transform.right).magnitude * maxForwardSpeed;
+
+            // // Determine change to speed based on whether there is currently any move input.
+            // float acceleration = IsMoveInput ? k_GroundAcceleration : k_GroundDeceleration;
+            //
+            // // Adjust the forward speed towards the desired speed.
+            // m_ForwardSpeed = Mathf.MoveTowards(m_ForwardSpeed, m_DesiredForwardSpeed, acceleration * Time.fixedDeltaTime);
+            //
+            // // Set the animator parameter to control what animation is being played.
+            // m_Animator.SetFloat(m_HashForwardSpeed, m_ForwardSpeed);
+            
+            // 根据角色朝向，计算移动方向
+            // 组合输入向量并归一化，确保斜向移动速度不会更快
+            Vector3 moveDirection = (m_Input.MoveInput.y * transform.forward + m_Input.MoveInput.x * transform.right).normalized;
+
+            // 应用移动
+            transform.position += moveDirection * maxForwardSpeed * Time.fixedDeltaTime;
         }
 
         // Called at the start of FixedUpdate to record the current state of the base layer of the animator.

@@ -29,6 +29,9 @@ namespace Gamekit3D
         SerializedProperty m_EmoteAttackPlayerProp;
         SerializedProperty m_EmoteJumpPlayerProp;
 
+        SerializedProperty m_CurrentStateProp;
+        SerializedProperty m_AimConfigProp;
+
         GUIContent m_ScriptContent = new GUIContent("Script");
 
         GUIContent m_MaxForwardSpeedContent = new GUIContent("Max Forward Speed", "How fast Ellen can run.");
@@ -47,6 +50,9 @@ namespace Gamekit3D
         GUIContent m_EmoteDeathPlayerContent = new GUIContent("Emote Death Player", "Used to play a random vocal sound when Ellen dies.");
         GUIContent m_EmoteAttackPlayerContent = new GUIContent("Emote Attack Player", "Used to play a random vocal sound when Ellen attacks.");
         GUIContent m_EmoteJumpPlayerContent = new GUIContent("Emote Jump Player", "Used to play a random vocal sound when Ellen jumps.");
+
+        GUIContent m_CurrentStateContent = new GUIContent("当前角色状态");
+        GUIContent m_AimConfigContent = new GUIContent("瞄准状态配置");
 
         void OnEnable()
         {
@@ -69,6 +75,9 @@ namespace Gamekit3D
             m_EmoteDeathPlayerProp = serializedObject.FindProperty("emoteDeathPlayer");
             m_EmoteAttackPlayerProp = serializedObject.FindProperty("emoteAttackPlayer");
             m_EmoteJumpPlayerProp = serializedObject.FindProperty("emoteJumpPlayer");
+
+            m_CurrentStateProp = serializedObject.FindProperty("currentState");
+            m_AimConfigProp = serializedObject.FindProperty("aimConfig");
         }
 
         public override void OnInspectorGUI()
@@ -104,6 +113,10 @@ namespace Gamekit3D
                 EditorGUILayout.PropertyField(m_EmoteDeathPlayerProp, m_EmoteDeathPlayerContent);
                 EditorGUILayout.PropertyField(m_EmoteAttackPlayerProp, m_EmoteAttackPlayerContent);
                 EditorGUILayout.PropertyField(m_EmoteJumpPlayerProp, m_EmoteJumpPlayerContent);
+                
+                EditorGUILayout.PropertyField(m_CurrentStateProp, m_CurrentStateContent);
+                EditorGUILayout.PropertyField(m_AimConfigProp, m_AimConfigContent);
+                
                 EditorGUI.indentLevel--;
             }
 
