@@ -1,6 +1,8 @@
 using UnityEngine;
 using Gamekit3D.Message;
 using System.Collections;
+using Charsiew;
+using Sirenix.OdinInspector;
 using UnityEngine.XR.WSA;
 
 namespace Gamekit3D
@@ -21,6 +23,8 @@ namespace Gamekit3D
         public float maxTurnSpeed = 1200f;        // How fast Ellen turns when stationary.
         public float idleTimeout = 5f;            // How long before Ellen starts considering random idles.
         public bool canAttack;                    // Whether or not Ellen can swing her staff.
+        
+        [ReadOnly, LabelText("当前角色状态")] public CharacterState currentState;
 
         public CameraSettings cameraSettings;            // Reference used to determine the camera's direction.
         public MeleeWeapon meleeWeapon;                  // Reference used to (de)activate the staff when attacking. 
@@ -164,6 +168,8 @@ namespace Gamekit3D
             EquipMeleeWeapon(false);
 
             m_Renderers = GetComponentsInChildren<Renderer>();
+            
+            m_Input.onAimButtonDown.AddListener(OnAimButtonDown);
         }
 
         // Called automatically by Unity whenever the script is disabled.
@@ -175,6 +181,8 @@ namespace Gamekit3D
             {
                 m_Renderers[i].enabled = true;
             }
+            
+            m_Input.onAimButtonDown.RemoveListener(OnAimButtonDown);
         }
 
         // Called automatically by Unity once every Physics step.
@@ -189,8 +197,12 @@ namespace Gamekit3D
             m_Animator.SetFloat(m_HashStateTime, Mathf.Repeat(m_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime, 1f));
             m_Animator.ResetTrigger(m_HashMeleeAttack);
 
-            if (m_Input.Attack && canAttack)
-                m_Animator.SetTrigger(m_HashMeleeAttack);
+            // if (m_Input.Attack && canAttack)
+            // {
+            //     m_Animator.SetTrigger(m_HashMeleeAttack);
+            // }
+
+            UpdateCharacterAttack();
 
             CalculateForwardMovement();
             CalculateVerticalMovement();
@@ -205,6 +217,27 @@ namespace Gamekit3D
             TimeoutToIdle();
 
             m_PreviouslyGrounded = m_IsGrounded;
+        }
+
+        /// <summary>
+        /// 更新角色攻击
+        /// </summary>
+        private void UpdateCharacterAttack()
+        {
+            bool isInAttack = m_Input.Attack && canAttack;
+            if (!isInAttack)
+            {
+                return;
+            }
+            
+            switch (currentState)
+            {
+                case CharacterState.NormalState:
+                    m_Animator.SetTrigger(m_HashMeleeAttack);
+                    break;
+                case CharacterState.ShotState:
+                    break;
+            }
         }
 
         // Called at the start of FixedUpdate to record the current state of the base layer of the animator.
@@ -677,6 +710,15 @@ namespace Gamekit3D
             m_VerticalSpeed = 0f;
             m_Respawning = true;
             m_Damageable.isInvulnerable = true;
+        }
+
+        private void OnAimButtonDown()
+        {
+            // 这里简单得处理状态切换，正式项目使用更复杂的状态机继承进行状态处理
+            currentState = currentState == CharacterState.ShotState ? CharacterState.NormalState : CharacterState.ShotState;
+            
+            // 相机管理
+            cameraSettings.OnCharacterStateChanged(currentState);
         }
     }
 }

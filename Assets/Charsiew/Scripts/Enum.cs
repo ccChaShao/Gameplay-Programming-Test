@@ -12,4 +12,13 @@ namespace Charsiew
         Auto = 1 << 1,          // 自动
         Charge = 1 << 2,        // 蓄力武器（未实现）
     }
+
+    /// <summary>
+    /// 玩家状态
+    /// </summary>
+    public enum CharacterState
+    {
+        NormalState,
+        ShotState,
+    }
 }

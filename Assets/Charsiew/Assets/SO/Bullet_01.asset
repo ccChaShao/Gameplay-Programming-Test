@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b87e3e6697ebf8a49b2e34e09b67fb44, type: 3}
   m_Name: Bullet_01
   m_EditorClassIdentifier: Assembly-CSharp:charsiew:BulletConfig
-  bulletPrefab: {fileID: 0}
+  bulletSpeed: 0
+  bulletPrefab: {fileID: 1062895056798360, guid: 8b4cba336c093ff41ae9321f9f8433d6,
+    type: 3}

@@ -13,6 +13,7 @@ namespace Gamekit3D
         SerializedProperty m_LookAtProp;
         SerializedProperty m_KeyboardAndMouseCameraProp;
         SerializedProperty m_ControllerCameraProp;
+        SerializedProperty m_AimVirtualCameraProp;
         SerializedProperty m_InputChoiceProp;
         SerializedProperty m_KeyboardAndMouseInvertSettingsProp;
         SerializedProperty m_KeyboardAndMouseInvertSettingsInvertXProp;
@@ -27,6 +28,7 @@ namespace Gamekit3D
         GUIContent m_LookAtContent = new GUIContent("Look At", "Used to determine how the cameras aim.  It should be set to HeadTarget (this is a child within Ellen's hierarchy).");
         GUIContent m_KeyboardAndMouseCameraContent = new GUIContent("Keyboard And Mouse Camera", "Used to control the camera position when the keyboard and mouse are being used as input.");
         GUIContent m_ControllerCameraContent = new GUIContent("Controller Camera", "Used to control the camera position when the controller is being used as input.");
+        GUIContent m_AimVirtualCameraContent = new GUIContent("瞄准状态相机", "没啥需要提示的。");
         GUIContent m_InputChoiceContent = new GUIContent("Input Choice", "How you wish to control the player - using a keyboard and mouse or a controller.  Selecting each will change which virtual camera is used.  The virtual cameras differ slightly in order to feel nice for their control method.");
         GUIContent m_KeyboardAndMouseInvertSettingsContent = new GUIContent("Keyboard And Mouse Invert Settings", "How the camera should respond to input in the X and Y axes when the Input Choice is set to Keyboard and Mouse.");
         GUIContent m_KeyboardAndMouseInvertSettingsInvertXContent = new GUIContent("Invert X");
@@ -43,6 +45,7 @@ namespace Gamekit3D
             m_LookAtProp = serializedObject.FindProperty("lookAt");
             m_KeyboardAndMouseCameraProp = serializedObject.FindProperty("keyboardAndMouseCamera");
             m_ControllerCameraProp = serializedObject.FindProperty("controllerCamera");
+            m_AimVirtualCameraProp = serializedObject.FindProperty("aimVirtualCamera");
             m_InputChoiceProp = serializedObject.FindProperty("inputChoice");
             m_KeyboardAndMouseInvertSettingsProp = serializedObject.FindProperty("keyboardAndMouseInvertSettings");
             m_KeyboardAndMouseInvertSettingsInvertXProp = m_KeyboardAndMouseInvertSettingsProp.FindPropertyRelative("invertX");
@@ -65,6 +68,7 @@ namespace Gamekit3D
             EditorGUILayout.PropertyField(m_LookAtProp, m_LookAtContent);
             EditorGUILayout.PropertyField(m_KeyboardAndMouseCameraProp, m_KeyboardAndMouseCameraContent);
             EditorGUILayout.PropertyField(m_ControllerCameraProp, m_ControllerCameraContent);
+            EditorGUILayout.PropertyField(m_AimVirtualCameraProp, m_AimVirtualCameraContent);
             EditorGUILayout.PropertyField(m_InputChoiceProp, m_InputChoiceContent);
 
             GUI.enabled = m_InputChoiceProp.intValue == 0;

@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using Gamekit3D;
+using UnityEngine.Events;
 
 
 public class PlayerInput : MonoBehaviour
@@ -20,9 +21,14 @@ public class PlayerInput : MonoBehaviour
     protected Vector2 m_Camera;
     protected bool m_Jump;
     protected bool m_Attack;
-    protected bool m_Aim;
     protected bool m_Pause;
     protected bool m_ExternalInputBlocked;
+
+    // 瞄准输入
+    protected const string m_AimButtonKey = "Aim"; 
+    protected bool m_Aim;
+    protected UnityEvent m_OnAimButtonDown = new ();
+    public UnityEvent onAimButtonDown => m_OnAimButtonDown;
 
     public Vector2 MoveInput
     {
@@ -72,7 +78,7 @@ public class PlayerInput : MonoBehaviour
     void Awake()
     {
         m_AttackInputWait = new WaitForSeconds(k_AttackInputDuration);
-
+    
         if (s_Instance == null)
             s_Instance = this;
         else if (s_Instance != this)
@@ -85,7 +91,7 @@ public class PlayerInput : MonoBehaviour
         m_Movement.Set(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         m_Camera.Set(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         m_Jump = Input.GetButton("Jump");
-        m_Aim = Input.GetButton("Aim");
+        m_Aim = Input.GetButton(m_AimButtonKey);
 
         if (Input.GetButtonDown("Fire1"))
         {
@@ -93,6 +99,11 @@ public class PlayerInput : MonoBehaviour
                 StopCoroutine(m_AttackWaitCoroutine);
 
             m_AttackWaitCoroutine = StartCoroutine(AttackWait());
+        }
+
+        if (Input.GetButtonDown(m_AimButtonKey))
+        {
+            m_OnAimButtonDown?.Invoke();
         }
 
         m_Pause = Input.GetButtonDown ("Pause");

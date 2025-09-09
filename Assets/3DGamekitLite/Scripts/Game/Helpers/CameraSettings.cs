@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
+using Charsiew;
 
 namespace Gamekit3D
 {
@@ -10,7 +11,7 @@ namespace Gamekit3D
     {
         public enum InputChoice
         {
-            KeyboardAndMouse, Controller,
+            KeyboardAndMouse, Controller, AimVirtualCamera
         }
 
         [Serializable]
@@ -25,6 +26,7 @@ namespace Gamekit3D
         public Transform lookAt;
         public CinemachineFreeLook keyboardAndMouseCamera;
         public CinemachineFreeLook controllerCamera;
+        public CinemachineVirtualCamera aimVirtualCamera;
         public InputChoice inputChoice;
         public InvertSettings keyboardAndMouseInvertSettings;
         public InvertSettings controllerInvertSettings;
@@ -82,8 +84,25 @@ namespace Gamekit3D
             controllerCamera.Follow = follow;
             controllerCamera.LookAt = lookAt;
 
+            aimVirtualCamera.Follow = follow;
+            aimVirtualCamera.LookAt = lookAt;
+
             keyboardAndMouseCamera.Priority = inputChoice == InputChoice.KeyboardAndMouse ? 1 : 0;
             controllerCamera.Priority = inputChoice == InputChoice.Controller ? 1 : 0;
+            aimVirtualCamera.Priority = inputChoice == InputChoice.AimVirtualCamera ? 1 : 0;
+        }
+
+        public void OnCharacterStateChanged(CharacterState state)
+        {
+            switch (state)
+            {
+                case CharacterState.NormalState:
+                    inputChoice = InputChoice.KeyboardAndMouse;
+                    break;
+                case CharacterState.ShotState:
+                    inputChoice = InputChoice.AimVirtualCamera;
+                    break;
+            }
         }
     } 
 }
