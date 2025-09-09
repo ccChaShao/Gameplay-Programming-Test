@@ -23,6 +23,7 @@ namespace Charsiew
         [LabelText("预制体资源")] public GameObject weaponPrefab;
         
         [TitleGroup("额外信息")]
+        
         [LabelText("子弹")] public BulletConfig BulletConfig = new ();
     }
 }

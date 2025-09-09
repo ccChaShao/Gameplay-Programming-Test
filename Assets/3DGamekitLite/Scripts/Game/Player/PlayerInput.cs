@@ -20,6 +20,7 @@ public class PlayerInput : MonoBehaviour
     protected Vector2 m_Camera;
     protected bool m_Jump;
     protected bool m_Attack;
+    protected bool m_Aim;
     protected bool m_Pause;
     protected bool m_ExternalInputBlocked;
 
@@ -53,6 +54,11 @@ public class PlayerInput : MonoBehaviour
         get { return m_Attack && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
     }
 
+    public bool Aim
+    {
+        get{ return m_Aim && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
+    }
+
     public bool Pause
     {
         get { return m_Pause; }
@@ -79,6 +85,7 @@ public class PlayerInput : MonoBehaviour
         m_Movement.Set(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         m_Camera.Set(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         m_Jump = Input.GetButton("Jump");
+        m_Aim = Input.GetButton("Aim");
 
         if (Input.GetButtonDown("Fire1"))
         {
