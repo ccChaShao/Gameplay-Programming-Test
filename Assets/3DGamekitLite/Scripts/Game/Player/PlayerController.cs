@@ -9,7 +9,7 @@ namespace Gamekit3D
 {
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(Animator))]
-    public class PlayerController : MonoBehaviour, IMessageReceiver
+    public partial class PlayerController : MonoBehaviour, IMessageReceiver
     {
         protected static PlayerController s_Instance;
         public static PlayerController instance { get { return s_Instance; } }
@@ -28,6 +28,19 @@ namespace Gamekit3D
 
         public CharacterState currentState;         // 当前状态
         public AimConfig aimConfig;                 // 瞄准状态配置
+        private AimControler m_AimControler;
+        public AimControler AimControler
+        {
+            get
+            {
+                if (!m_AimControler)
+                {
+                    m_AimControler = GetComponent<AimControler>();
+                }
+
+                return m_AimControler;
+            }
+        }
 
         #endregion
 
@@ -176,6 +189,12 @@ namespace Gamekit3D
             
             m_Input.onAimButtonDown.AddListener(OnAimButtonDown);
             m_Input.onAimButtonUp.AddListener(OnAimButtonUp);
+
+            #region partial
+
+            OnWeaponSwitcherEnable();
+
+            #endregion
         }
 
         // Called automatically by Unity whenever the script is disabled.
@@ -190,6 +209,12 @@ namespace Gamekit3D
             
             m_Input.onAimButtonDown.RemoveListener(OnAimButtonDown);
             m_Input.onAimButtonUp.RemoveListener(OnAimButtonUp);
+
+            #region partial
+
+            OnWeaponSwitcherDisable();
+
+            #endregion
         }
 
         // Called automatically by Unity once every Physics step.
@@ -759,26 +784,46 @@ namespace Gamekit3D
             m_Damageable.isInvulnerable = true;
         }
 
-        private void OnCharacterStateChanged()
+        private void OnCharacterStateChanged(CharacterState pre, CharacterState cur)
         {
             // 动画混合处理
             m_Animator.SetLayerWeight(1, currentState == CharacterState.ShotState ? 1 : 0);
             // 相机管理
             cameraSettings.OnCharacterStateChanged(currentState);
+            // 状态生命周期退出
+            switch (pre)
+            {
+                case CharacterState.ShotState:
+                    AimControler.ExitState();
+                    break;
+            }
+            // 状态生命周期进入
+            switch (cur)
+            {
+                case CharacterState.ShotState:
+                    AimControler.EnterState();
+                    break;
+            }
         }
 
         private void OnAimButtonDown()
         {
+            var pre = currentState;
             // 这里简单得处理状态切换，正式项目使用更复杂的状态机继承进行状态处理
-            currentState = currentState == CharacterState.ShotState ? CharacterState.NormalState : CharacterState.ShotState;
-            OnCharacterStateChanged();
+            currentState = currentState == CharacterState.ShotState
+                ? CharacterState.NormalState
+                : CharacterState.ShotState;
+            OnCharacterStateChanged(pre, currentState);
         }
 
         private void OnAimButtonUp()
         {
+            var pre = currentState;
             // 这里简单得处理状态切换，正式项目使用更复杂的状态机继承进行状态处理
-            currentState = currentState == CharacterState.ShotState ? CharacterState.NormalState : CharacterState.ShotState;
-            OnCharacterStateChanged();
+            currentState = currentState == CharacterState.ShotState
+                ? CharacterState.NormalState
+                : CharacterState.ShotState;
+            OnCharacterStateChanged(pre, currentState);
         }
     }
 }
