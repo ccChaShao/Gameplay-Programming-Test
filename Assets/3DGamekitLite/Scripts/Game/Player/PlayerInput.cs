@@ -24,11 +24,18 @@ public class PlayerInput : MonoBehaviour
     protected bool m_Pause;
     protected bool m_ExternalInputBlocked;
 
-    // 瞄准输入
+    #region Charsiew
+
     protected const string m_AimButtonKey = "Aim"; 
     protected bool m_Aim;
+    
     protected UnityEvent m_OnAimButtonDown = new ();
     public UnityEvent onAimButtonDown => m_OnAimButtonDown;
+    
+    protected UnityEvent m_OnAimButtonUp = new ();
+    public UnityEvent onAimButtonUp => m_OnAimButtonUp;
+
+    #endregion
 
     public Vector2 MoveInput
     {
@@ -104,6 +111,11 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetButtonDown(m_AimButtonKey))
         {
             m_OnAimButtonDown?.Invoke();
+        }
+
+        if (Input.GetButtonUp(m_AimButtonKey))
+        {
+            onAimButtonUp?.Invoke();
         }
 
         m_Pause = Input.GetButtonDown ("Pause");

@@ -175,6 +175,7 @@ namespace Gamekit3D
             m_Renderers = GetComponentsInChildren<Renderer>();
             
             m_Input.onAimButtonDown.AddListener(OnAimButtonDown);
+            m_Input.onAimButtonUp.AddListener(OnAimButtonUp);
         }
 
         // Called automatically by Unity whenever the script is disabled.
@@ -188,6 +189,7 @@ namespace Gamekit3D
             }
             
             m_Input.onAimButtonDown.RemoveListener(OnAimButtonDown);
+            m_Input.onAimButtonUp.RemoveListener(OnAimButtonUp);
         }
 
         // Called automatically by Unity once every Physics step.
@@ -215,9 +217,9 @@ namespace Gamekit3D
                     {
                         m_Animator.SetTrigger(m_HashMeleeAttack);
                     }
-                    // 移动
-                    CalculateForwardMovement();
                     // 水平移动
+                    CalculateForwardMovement();
+                    // 转向
                     SetTargetRotation();
                     if (IsMoveInput && IsOrientationUpdated())
                     {
@@ -231,10 +233,10 @@ namespace Gamekit3D
                 {
                     // 攻击
                     // ...
-                    // 移动
-                    CalculateAimForwardMovement();
-                    // 垂直移动
-                    CalculateVerticalMovement();
+                    // 水平移动
+                    CalculateForwardMovement();
+                    // 转向
+                    UpdateAimOrientation();
                     break;
                 }
             }
@@ -248,36 +250,31 @@ namespace Gamekit3D
             m_PreviouslyGrounded = m_IsGrounded;
         }
 
+        private Vector3 GetAnimatorDeltaPosition()
+        {
+            switch (currentState)
+            {
+                case CharacterState.ShotState:
+                {
+                    Vector3 inputMoveDir = (m_Input.MoveInput.y * transform.forward + m_Input.MoveInput.x * transform.right).normalized;
+                    return inputMoveDir * m_Animator.deltaPosition.magnitude;
+                }
+                default:
+                    return m_Animator.deltaPosition;
+            }
+        }
+
         /// <summary>
         /// 更新角色 瞄准模式移动
         /// </summary>
-        private void CalculateAimForwardMovement()
+        private void UpdateAimOrientation()
         {
             // 获取鼠标输入
-            float mouseX = m_Input.CameraInput.x * aimConfig.mouseSensitivity * Time.fixedDeltaTime;
-            float mouseY = m_Input.CameraInput.y * aimConfig.mouseSensitivity * Time.fixedDeltaTime;
+            float mouseX = m_Input.CameraInput.x * aimConfig.mouseSensitivity * Time.deltaTime;
+            float mouseY = m_Input.CameraInput.y * aimConfig.mouseSensitivity * Time.deltaTime;
             
             // 朝向
             transform.Rotate(Vector3.up * mouseX);
-
-            // // 移动方向
-            // m_DesiredForwardSpeed = (m_Input.MoveInput.y * transform.forward + m_Input.MoveInput.x * transform.right).magnitude * maxForwardSpeed;
-
-            // // Determine change to speed based on whether there is currently any move input.
-            // float acceleration = IsMoveInput ? k_GroundAcceleration : k_GroundDeceleration;
-            //
-            // // Adjust the forward speed towards the desired speed.
-            // m_ForwardSpeed = Mathf.MoveTowards(m_ForwardSpeed, m_DesiredForwardSpeed, acceleration * Time.fixedDeltaTime);
-            //
-            // // Set the animator parameter to control what animation is being played.
-            // m_Animator.SetFloat(m_HashForwardSpeed, m_ForwardSpeed);
-            
-            // 根据角色朝向，计算移动方向
-            // 组合输入向量并归一化，确保斜向移动速度不会更快
-            Vector3 moveDirection = (m_Input.MoveInput.y * transform.forward + m_Input.MoveInput.x * transform.right).normalized;
-
-            // 应用移动
-            transform.position += moveDirection * maxForwardSpeed * Time.fixedDeltaTime;
         }
 
         // Called at the start of FixedUpdate to record the current state of the base layer of the animator.
@@ -561,7 +558,10 @@ namespace Gamekit3D
 
             m_Animator.SetBool(m_HashInputDetected, inputDetected);
         }
+        /// <summary>
 
+        /// 这里是通过动画去驱动人物移动了
+        /// </summary>
         // Called each physics step (so long as the Animator component is set to Animate Physics) after FixedUpdate to override root motion.
         void OnAnimatorMove()
         {
@@ -576,7 +576,9 @@ namespace Gamekit3D
                 if (Physics.Raycast(ray, out hit, k_GroundedRayDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore))
                 {
                     // ... and get the movement of the root motion rotated to lie along the plane of the ground.
-                    movement = Vector3.ProjectOnPlane(m_Animator.deltaPosition, hit.normal);
+                    Vector3 animDeltaPosition = GetAnimatorDeltaPosition();
+                    movement = Vector3.ProjectOnPlane(animDeltaPosition, hit.normal);
+                    // movement = Vector3.ProjectOnPlane(m_Animator.deltaPosition, hit.normal);
                     
                     // Also store the current walking surface so the correct audio is played.
                     Renderer groundRenderer = hit.collider.GetComponentInChildren<Renderer>();
@@ -586,7 +588,9 @@ namespace Gamekit3D
                 {
                     // If no ground is hit just get the movement as the root motion.
                     // Theoretically this should rarely happen as when grounded the ray should always hit.
-                    movement = m_Animator.deltaPosition;
+                    Vector3 animDeltaPosition = GetAnimatorDeltaPosition();
+                    movement = animDeltaPosition;
+                    // movement = m_Animator.deltaPosition;
                     m_CurrentWalkingSurface = null;
                 }
             }
@@ -753,6 +757,15 @@ namespace Gamekit3D
         }
 
         private void OnAimButtonDown()
+        {
+            // 这里简单得处理状态切换，正式项目使用更复杂的状态机继承进行状态处理
+            currentState = currentState == CharacterState.ShotState ? CharacterState.NormalState : CharacterState.ShotState;
+            
+            // 相机管理
+            cameraSettings.OnCharacterStateChanged(currentState);
+        }
+
+        private void OnAimButtonUp()
         {
             // 这里简单得处理状态切换，正式项目使用更复杂的状态机继承进行状态处理
             currentState = currentState == CharacterState.ShotState ? CharacterState.NormalState : CharacterState.ShotState;
