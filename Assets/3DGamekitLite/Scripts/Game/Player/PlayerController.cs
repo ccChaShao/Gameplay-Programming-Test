@@ -250,6 +250,9 @@ namespace Gamekit3D
             m_PreviouslyGrounded = m_IsGrounded;
         }
 
+        /// <summary>
+        /// 获取动画方向移动量
+        /// </summary>
         private Vector3 GetAnimatorDeltaPosition()
         {
             switch (currentState)
