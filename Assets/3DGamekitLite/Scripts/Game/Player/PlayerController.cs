@@ -223,12 +223,6 @@ namespace Gamekit3D
             {
                 case CharacterState.NormalState:
                 {
-                    // 攻击
-                    bool isInAttack = m_Input.Attack && canAttack;
-                    if (isInAttack)
-                    {
-                        m_Animator.SetTrigger(m_HashMeleeAttack);
-                    }
                     // 水平移动
                     CalculateForwardMovement();
                     // 转向
@@ -243,8 +237,6 @@ namespace Gamekit3D
                 }
                 case CharacterState.ShotState:
                 {
-                    // 攻击
-                    // ...
                     // 水平移动
                     CalculateForwardMovement();
                     // 转向
@@ -252,6 +244,9 @@ namespace Gamekit3D
                     break;
                 }
             }
+            
+            // 攻击
+            ExcuteAttack();
 
             #endregion
 
@@ -773,8 +768,6 @@ namespace Gamekit3D
 
         private void OnCharacterStateChanged(CharacterState pre, CharacterState cur)
         {
-            // 动画混合处理
-            m_Animator.SetLayerWeight(1, currentState == CharacterState.ShotState ? 1 : 0);
             // 相机管理
             cameraSettings.OnCharacterStateChanged(currentState);
         }

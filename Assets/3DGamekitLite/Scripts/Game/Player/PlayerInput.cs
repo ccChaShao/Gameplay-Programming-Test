@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using Gamekit3D;
 using UnityEngine.Events;
+using Charsiew;
 
 
 public class PlayerInput : MonoBehaviour
@@ -27,13 +28,19 @@ public class PlayerInput : MonoBehaviour
     #region Charsiew
 
     protected const string m_AimButtonKey = "Aim"; 
-    protected bool m_Aim;
     
     protected UnityEvent m_OnAimButtonDown = new ();
     public UnityEvent onAimButtonDown => m_OnAimButtonDown;
     
     protected UnityEvent m_OnAimButtonUp = new ();
     public UnityEvent onAimButtonUp => m_OnAimButtonUp;
+    
+    protected string m_FirstWeaponButtonKey = "FirstWeapon";
+    protected string m_SecondWeaponButtonKey = "SecondWeapon";
+    protected string m_ThirdWeaponButtonKey = "ThirdWeapon";
+    
+    protected UnityEvent<WeaponIndex> m_OnWeaponButtonDown = new ();
+    public UnityEvent<WeaponIndex> onWeaponButtonDown => m_OnWeaponButtonDown;
 
     #endregion
 
@@ -67,11 +74,6 @@ public class PlayerInput : MonoBehaviour
         get { return m_Attack && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
     }
 
-    public bool Aim
-    {
-        get{ return m_Aim && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
-    }
-
     public bool Pause
     {
         get { return m_Pause; }
@@ -98,7 +100,6 @@ public class PlayerInput : MonoBehaviour
         m_Movement.Set(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         m_Camera.Set(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         m_Jump = Input.GetButton("Jump");
-        m_Aim = Input.GetButton(m_AimButtonKey);
 
         if (Input.GetButtonDown("Fire1"))
         {
@@ -116,6 +117,21 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetButtonUp(m_AimButtonKey))
         {
             onAimButtonUp?.Invoke();
+        }
+
+        if (Input.GetButtonDown(m_FirstWeaponButtonKey))
+        {
+            m_OnWeaponButtonDown?.Invoke(WeaponIndex.First);
+        }
+
+        if (Input.GetButtonDown(m_SecondWeaponButtonKey))
+        {
+            m_OnWeaponButtonDown?.Invoke(WeaponIndex.Second);
+        }
+
+        if (Input.GetButtonDown(m_ThirdWeaponButtonKey))
+        {
+            m_OnWeaponButtonDown?.Invoke(WeaponIndex.Third);
         }
 
         m_Pause = Input.GetButtonDown ("Pause");

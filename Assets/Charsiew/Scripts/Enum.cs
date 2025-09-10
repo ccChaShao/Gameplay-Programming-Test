@@ -21,4 +21,14 @@ namespace Charsiew
         NormalState,
         ShotState,
     }
+
+    /// <summary>
+    /// 武器下标
+    /// </summary>
+    public enum WeaponIndex
+    {
+        First = 1,
+        Second = 2,
+        Third = 3,
+    }
 }

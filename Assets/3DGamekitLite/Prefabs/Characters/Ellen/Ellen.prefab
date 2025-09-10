@@ -16815,8 +16815,12 @@ MonoBehaviour:
   emoteAttackPlayer: {fileID: 114760947911017218}
   emoteJumpPlayer: {fileID: 114482031319434234}
   gunHolder: {fileID: 5532269875986773897}
-  weapon02: {fileID: 11400000, guid: 696bf6f7c7c13f34f86708dd6be32855, type: 2}
-  weapon03: {fileID: 11400000, guid: eade0eb937c163948b0f1f23a539bce5, type: 2}
+  weapon02:
+    weaponConfig: {fileID: 11400000, guid: 696bf6f7c7c13f34f86708dd6be32855, type: 2}
+    gameObject: {fileID: 0}
+  weapon03:
+    weaponConfig: {fileID: 11400000, guid: eade0eb937c163948b0f1f23a539bce5, type: 2}
+    gameObject: {fileID: 0}
 --- !u!114 &114166992771378430
 MonoBehaviour:
   m_ObjectHideFlags: 0
