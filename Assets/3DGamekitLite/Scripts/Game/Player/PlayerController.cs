@@ -759,22 +759,26 @@ namespace Gamekit3D
             m_Damageable.isInvulnerable = true;
         }
 
+        private void OnCharacterStateChanged()
+        {
+            // 动画混合处理
+            m_Animator.SetLayerWeight(1, currentState == CharacterState.ShotState ? 1 : 0);
+            // 相机管理
+            cameraSettings.OnCharacterStateChanged(currentState);
+        }
+
         private void OnAimButtonDown()
         {
             // 这里简单得处理状态切换，正式项目使用更复杂的状态机继承进行状态处理
             currentState = currentState == CharacterState.ShotState ? CharacterState.NormalState : CharacterState.ShotState;
-            
-            // 相机管理
-            cameraSettings.OnCharacterStateChanged(currentState);
+            OnCharacterStateChanged();
         }
 
         private void OnAimButtonUp()
         {
             // 这里简单得处理状态切换，正式项目使用更复杂的状态机继承进行状态处理
             currentState = currentState == CharacterState.ShotState ? CharacterState.NormalState : CharacterState.ShotState;
-            
-            // 相机管理
-            cameraSettings.OnCharacterStateChanged(currentState);
+            OnCharacterStateChanged();
         }
     }
 }

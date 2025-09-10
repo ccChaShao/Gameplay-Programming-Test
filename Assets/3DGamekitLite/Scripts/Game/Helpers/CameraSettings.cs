@@ -24,6 +24,7 @@ namespace Gamekit3D
 
         public Transform follow;
         public Transform lookAt;
+        public Transform AimLookAt;
         public CinemachineFreeLook keyboardAndMouseCamera;
         public CinemachineFreeLook controllerCamera;
         public CinemachineVirtualCamera aimVirtualCamera;
@@ -62,6 +63,12 @@ namespace Gamekit3D
         void Awake()
         {
             UpdateCameraSettings();
+            
+            PlayerController playerController = FindObjectOfType<PlayerController>();
+            
+            follow = playerController.transform;
+            AimLookAt = follow.Find("AimHeadTarget");
+            lookAt = follow.Find("HeadTarget");
         }
 
         void Update()
@@ -85,7 +92,7 @@ namespace Gamekit3D
             controllerCamera.LookAt = lookAt;
 
             aimVirtualCamera.Follow = follow;
-            aimVirtualCamera.LookAt = lookAt;
+            aimVirtualCamera.LookAt = AimLookAt;
 
             keyboardAndMouseCamera.Priority = inputChoice == InputChoice.KeyboardAndMouse ? 1 : 0;
             controllerCamera.Priority = inputChoice == InputChoice.Controller ? 1 : 0;
