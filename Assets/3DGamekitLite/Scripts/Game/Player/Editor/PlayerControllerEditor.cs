@@ -29,8 +29,12 @@ namespace Gamekit3D
         SerializedProperty m_EmoteAttackPlayerProp;
         SerializedProperty m_EmoteJumpPlayerProp;
 
-        SerializedProperty m_CurrentStateProp;
-        SerializedProperty m_AimConfigProp;
+        private SerializedProperty m_CurrentStateProp;
+        private SerializedProperty m_AimConfigProp;
+
+        private SerializedProperty m_GunHolderProp;
+        private SerializedProperty m_Weapon02Prop;
+        private SerializedProperty m_Weapon03Prop;
 
         GUIContent m_ScriptContent = new GUIContent("Script");
 
@@ -51,8 +55,12 @@ namespace Gamekit3D
         GUIContent m_EmoteAttackPlayerContent = new GUIContent("Emote Attack Player", "Used to play a random vocal sound when Ellen attacks.");
         GUIContent m_EmoteJumpPlayerContent = new GUIContent("Emote Jump Player", "Used to play a random vocal sound when Ellen jumps.");
 
-        GUIContent m_CurrentStateContent = new GUIContent("当前角色状态");
-        GUIContent m_AimConfigContent = new GUIContent("瞄准状态配置");
+        GUIContent m_CurrentStateContent = new ("当前角色状态");
+        GUIContent m_AimConfigContent = new ("瞄准状态配置");
+        
+        GUIContent m_GunHolderContent = new ("枪械握持点");
+        GUIContent m_Weapon02Content = new ("二号武器配置");
+        GUIContent m_Weapon03Content = new ("三号武器配置");
 
         void OnEnable()
         {
@@ -78,7 +86,13 @@ namespace Gamekit3D
 
             m_CurrentStateProp = serializedObject.FindProperty("currentState");
             m_AimConfigProp = serializedObject.FindProperty("aimConfig");
+
+            m_GunHolderProp = serializedObject.FindProperty("gunHolder");
+            m_Weapon02Prop = serializedObject.FindProperty("weapon02");
+            m_Weapon03Prop = serializedObject.FindProperty("weapon03");
         }
+
+        private bool isOpenGunPanel = false;
 
         public override void OnInspectorGUI()
         {
@@ -116,6 +130,18 @@ namespace Gamekit3D
                 
                 EditorGUILayout.PropertyField(m_CurrentStateProp, m_CurrentStateContent);
                 EditorGUILayout.PropertyField(m_AimConfigProp, m_AimConfigContent);
+                
+                EditorGUI.indentLevel--;
+            }
+            
+            isOpenGunPanel = EditorGUILayout.Foldout(isOpenGunPanel, "WeaponControler");
+            if (isOpenGunPanel)
+            {
+                EditorGUI.indentLevel++;
+                
+                EditorGUILayout.PropertyField(m_GunHolderProp, m_GunHolderContent);
+                EditorGUILayout.PropertyField(m_Weapon02Prop, m_Weapon02Content);
+                EditorGUILayout.PropertyField(m_Weapon03Prop, m_Weapon03Content);
                 
                 EditorGUI.indentLevel--;
             }

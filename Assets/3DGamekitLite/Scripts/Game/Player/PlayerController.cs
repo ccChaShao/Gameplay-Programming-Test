@@ -28,19 +28,6 @@ namespace Gamekit3D
 
         public CharacterState currentState;         // 当前状态
         public AimConfig aimConfig;                 // 瞄准状态配置
-        private AimControler m_AimControler;
-        public AimControler AimControler
-        {
-            get
-            {
-                if (!m_AimControler)
-                {
-                    m_AimControler = GetComponent<AimControler>();
-                }
-
-                return m_AimControler;
-            }
-        }
 
         #endregion
 
@@ -790,20 +777,6 @@ namespace Gamekit3D
             m_Animator.SetLayerWeight(1, currentState == CharacterState.ShotState ? 1 : 0);
             // 相机管理
             cameraSettings.OnCharacterStateChanged(currentState);
-            // 状态生命周期退出
-            switch (pre)
-            {
-                case CharacterState.ShotState:
-                    AimControler.ExitState();
-                    break;
-            }
-            // 状态生命周期进入
-            switch (cur)
-            {
-                case CharacterState.ShotState:
-                    AimControler.EnterState();
-                    break;
-            }
         }
 
         private void OnAimButtonDown()
