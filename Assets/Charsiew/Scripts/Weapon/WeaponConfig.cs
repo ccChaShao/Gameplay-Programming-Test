@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Charsiew
 {
@@ -17,13 +18,20 @@ namespace Charsiew
         [LabelText("武器伤害")] public float damage;
 
         [LabelText("射击间隔")] public float shotGap;
+        
+        [LabelText("上单时长")] public float reloadTime;
+        
+        [LabelText("弹匣尺寸")] public uint bulletCount;
     
+        [LabelText("默认扳机类型"), EnumToggleButtons] public WeaponTriggerType defaultTrigger;
+        
         [LabelText("扳机支持类型"), EnumToggleButtons] public WeaponTriggerType trigger;
         
         [LabelText("预制体资源")] public GameObject weaponPrefab;
         
+        [FormerlySerializedAs("BulletConfig")]
         [TitleGroup("额外信息")]
         
-        [LabelText("子弹")] public BulletConfig BulletConfig = new ();
+        [LabelText("子弹")] public BulletConfig bulletConfig = new ();
     }
 }

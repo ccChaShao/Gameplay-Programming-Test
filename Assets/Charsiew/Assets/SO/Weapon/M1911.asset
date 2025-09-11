@@ -15,7 +15,9 @@ MonoBehaviour:
   id: 1001
   damage: 8
   shotGap: -1
+  bulletCount: 6
+  defaultTrigger: 1
   trigger: 1
   weaponPrefab: {fileID: 1694449805434718, guid: 6f1a7354265853f44b0ed5e2e43676ad,
     type: 3}
-  BulletConfig: {fileID: 11400000, guid: 49498b55bc168a64c895199a51e7ae90, type: 2}
+  bulletConfig: {fileID: 11400000, guid: 49498b55bc168a64c895199a51e7ae90, type: 2}

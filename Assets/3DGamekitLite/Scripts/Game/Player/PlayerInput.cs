@@ -27,20 +27,26 @@ public class PlayerInput : MonoBehaviour
 
     #region Charsiew
 
+    // 瞄准按钮
     protected const string m_AimButtonKey = "Aim"; 
-    
     protected UnityEvent m_OnAimButtonDown = new ();
-    public UnityEvent onAimButtonDown => m_OnAimButtonDown;
-    
     protected UnityEvent m_OnAimButtonUp = new ();
+    public UnityEvent onAimButtonDown => m_OnAimButtonDown;
     public UnityEvent onAimButtonUp => m_OnAimButtonUp;
     
-    protected string m_FirstWeaponButtonKey = "FirstWeapon";
-    protected string m_SecondWeaponButtonKey = "SecondWeapon";
-    protected string m_ThirdWeaponButtonKey = "ThirdWeapon";
-    
+    // 武器切换按钮
+    protected const string m_FirstWeaponButtonKey = "FirstWeapon";
+    protected const string m_SecondWeaponButtonKey = "SecondWeapon";
+    protected const string m_ThirdWeaponButtonKey = "ThirdWeapon";
     protected UnityEvent<WeaponIndex> m_OnWeaponButtonDown = new ();
     public UnityEvent<WeaponIndex> onWeaponButtonDown => m_OnWeaponButtonDown;
+    
+    // 攻击按钮
+    protected const string m_AttackButtonKey = "Fire1";
+    protected UnityEvent m_OnAttackButtonDown = new ();
+    protected UnityEvent m_OnAttackButtonUp = new ();
+    public UnityEvent onAttackButtonDown => m_OnAttackButtonDown;
+    public UnityEvent onAttackButtonUp => m_OnAttackButtonUp;
 
     #endregion
 
@@ -69,15 +75,14 @@ public class PlayerInput : MonoBehaviour
         get { return m_Jump && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
     }
 
-    public bool Attack
-    {
-        get { return m_Attack && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
-    }
+    // public bool Attack
+    // {
+    //     get { return m_Attack && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
+    // }
 
-    public bool Pause
-    {
-        get { return m_Pause; }
-    }
+    public bool Attack => m_Attack;
+
+    public bool Pause => m_Pause;
 
     WaitForSeconds m_AttackInputWait;
     Coroutine m_AttackWaitCoroutine;
@@ -101,12 +106,18 @@ public class PlayerInput : MonoBehaviour
         m_Camera.Set(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         m_Jump = Input.GetButton("Jump");
 
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown(m_AttackButtonKey))
         {
             if (m_AttackWaitCoroutine != null)
                 StopCoroutine(m_AttackWaitCoroutine);
 
             m_AttackWaitCoroutine = StartCoroutine(AttackWait());
+            m_OnAttackButtonDown?.Invoke();
+        }
+
+        if (Input.GetButtonUp(m_AttackButtonKey))
+        {
+            m_OnAttackButtonUp?.Invoke();
         }
 
         if (Input.GetButtonDown(m_AimButtonKey))

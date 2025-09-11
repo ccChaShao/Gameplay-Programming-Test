@@ -22,7 +22,6 @@ namespace Gamekit3D
         public float minTurnSpeed = 400f;         // How fast Ellen turns when moving at maximum speed.
         public float maxTurnSpeed = 1200f;        // How fast Ellen turns when stationary.
         public float idleTimeout = 5f;            // How long before Ellen starts considering random idles.
-        public bool canAttack;                    // Whether or not Ellen can swing her staff.
 
         #region Charsiew
 
@@ -114,11 +113,6 @@ namespace Gamekit3D
             get { return !Mathf.Approximately(m_Input.MoveInput.sqrMagnitude, 0f); }
         }
 
-        public void SetCanAttack(bool canAttack)
-        {
-            this.canAttack = canAttack;
-        }
-
         // Called automatically by Unity when the script is first added to a gameobject or is reset from the context menu.
         void Reset()
         {
@@ -158,6 +152,12 @@ namespace Gamekit3D
             meleeWeapon.SetOwner(gameObject);
 
             s_Instance = this;
+
+            #region partial
+
+            OnWeaponSwitcherAwake();
+
+            #endregion
         }
 
         // Called automatically by Unity after Awake whenever the script is enabled. 
@@ -246,7 +246,7 @@ namespace Gamekit3D
             }
             
             // 攻击
-            ExcuteAttack();
+            TryAttack();
 
             #endregion
 
