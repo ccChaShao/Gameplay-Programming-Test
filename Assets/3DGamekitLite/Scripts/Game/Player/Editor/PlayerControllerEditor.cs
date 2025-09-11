@@ -17,7 +17,6 @@ namespace Gamekit3D
         SerializedProperty m_MinTurnSpeedProp;
         SerializedProperty m_MaxTurnSpeedProp;
         SerializedProperty m_IdleTimeoutProp;
-        SerializedProperty m_CanAttackProp;
 
         SerializedProperty m_MeleeWeaponProp;
         SerializedProperty m_CameraSettingsProp;
@@ -29,6 +28,8 @@ namespace Gamekit3D
         SerializedProperty m_EmoteAttackPlayerProp;
         SerializedProperty m_EmoteJumpPlayerProp;
 
+        private SerializedProperty m_NormalAttackDuringProp;
+        
         private SerializedProperty m_CurrentStateProp;
         private SerializedProperty m_AimConfigProp;
 
@@ -43,7 +44,6 @@ namespace Gamekit3D
         GUIContent m_JumpSpeedContent = new GUIContent("Jump Speed", "How fast Ellen takes off when jumping.");
         GUIContent m_TurnSpeedContent = new GUIContent("Turn Speed", "How fast Ellen turns.  This varies depending on how fast she is moving.  When stationary the maximum will be used and when running at Max Forward Speed the minimum will be used.");
         GUIContent m_IdleTimeoutContent = new GUIContent("Idle Timeout", "How many seconds before Ellen starts considering random Idle poses.");
-        GUIContent m_CanAttackContent = new GUIContent("Can Attack", "Whether or not Ellen can attack with her staff.  This can be set externally.");
 
         GUIContent m_MeleeWeaponContent = new GUIContent("Melee Weapon", "Used for damaging enemies when Ellen swings her staff.");
         GUIContent m_CameraSettingsContent = new GUIContent("Camera Settings", "Used to get the rotation of the current camera so that Ellen faces the correct direction.  Note: This is the only reference which is not part of the Ellen prefab.  It should automatically be set to the Camera Settings script of the CameraRig gameobject when the Prefab is instantiated.");
@@ -55,6 +55,8 @@ namespace Gamekit3D
         GUIContent m_EmoteAttackPlayerContent = new GUIContent("Emote Attack Player", "Used to play a random vocal sound when Ellen attacks.");
         GUIContent m_EmoteJumpPlayerContent = new GUIContent("Emote Jump Player", "Used to play a random vocal sound when Ellen jumps.");
 
+        GUIContent m_NormalAttackDuringContent = new ("普通攻击间隔");
+        
         GUIContent m_CurrentStateContent = new ("当前角色状态");
         GUIContent m_AimConfigContent = new ("瞄准状态配置");
         
@@ -72,7 +74,6 @@ namespace Gamekit3D
             m_MinTurnSpeedProp = serializedObject.FindProperty("minTurnSpeed");
             m_MaxTurnSpeedProp = serializedObject.FindProperty("maxTurnSpeed");
             m_IdleTimeoutProp = serializedObject.FindProperty("idleTimeout");
-            m_CanAttackProp = serializedObject.FindProperty("canAttack");
 
             m_MeleeWeaponProp = serializedObject.FindProperty("meleeWeapon");
             m_CameraSettingsProp = serializedObject.FindProperty("cameraSettings");
@@ -84,6 +85,8 @@ namespace Gamekit3D
             m_EmoteAttackPlayerProp = serializedObject.FindProperty("emoteAttackPlayer");
             m_EmoteJumpPlayerProp = serializedObject.FindProperty("emoteJumpPlayer");
 
+            m_NormalAttackDuringProp = serializedObject.FindProperty("normalAttackDuring");
+            
             m_CurrentStateProp = serializedObject.FindProperty("currentState");
             m_AimConfigProp = serializedObject.FindProperty("aimConfig");
 
@@ -109,7 +112,6 @@ namespace Gamekit3D
             MinMaxTurnSpeed();
 
             EditorGUILayout.PropertyField(m_IdleTimeoutProp, m_IdleTimeoutContent);
-            EditorGUILayout.PropertyField(m_CanAttackProp, m_CanAttackContent);
 
             EditorGUILayout.Space();
 
@@ -128,6 +130,7 @@ namespace Gamekit3D
                 EditorGUILayout.PropertyField(m_EmoteAttackPlayerProp, m_EmoteAttackPlayerContent);
                 EditorGUILayout.PropertyField(m_EmoteJumpPlayerProp, m_EmoteJumpPlayerContent);
                 
+                EditorGUILayout.PropertyField(m_NormalAttackDuringProp, m_NormalAttackDuringContent);
                 EditorGUILayout.PropertyField(m_CurrentStateProp, m_CurrentStateContent);
                 EditorGUILayout.PropertyField(m_AimConfigProp, m_AimConfigContent);
                 

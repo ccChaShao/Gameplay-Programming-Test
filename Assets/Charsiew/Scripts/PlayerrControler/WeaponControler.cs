@@ -22,6 +22,28 @@ namespace Gamekit3D
         [HideInInspector] public uint bulletCount = 0;            
         [HideInInspector] public WeaponTriggerType trigger;
         [HideInInspector] public GameObject gameObject;
+        
+        private bool m_IsBlockAttack = false;
+        private Coroutine m_AttackGapCoroutine;
+
+        public Coroutine attackGapCoroutine
+        {
+            get => m_AttackGapCoroutine;
+            set => m_AttackGapCoroutine = value;
+        }
+
+        public bool isBlockAttack
+        {
+            get => m_IsBlockAttack;
+            set => m_IsBlockAttack = value;
+        }
+
+        public IEnumerator IENormalWeapon02Gap()
+        {
+            m_IsBlockAttack = true;
+            yield return new WaitForSeconds(weaponConfig.shotGap);
+            m_IsBlockAttack = false;
+        }
     }
     
     public partial class PlayerController
@@ -30,16 +52,18 @@ namespace Gamekit3D
         public Transform gunHolder;
         
         // 近战攻击
-        public float normalAttackDuring = 0.03f;
+        public float normalAttackDuring = 2.0f;
+        private bool m_IsBlockNormalAttack = false;
+        private Coroutine m_normalAttackGapCoroutine;
         
         // 武器栏
         public WeaponData weapon02 = new();
+        private Coroutine m_Weapon02GapCoroutine;
         public WeaponData weapon03 = new();
+        private Coroutine m_Weapon03GapCoroutine;
         
         // 状态参数
-        private WeaponIndex m_WeaponIndex = WeaponIndex.First;            // 当前武器下标（物理序号）
-        private bool m_IsBlockAttack = false;
-        private Coroutine m_AttackWaitCoroutine;
+        private WeaponIndex m_WeaponIndex = WeaponIndex.First;          // 当前武器下标（物理序号）
 
         private void TryAttack()
         {
@@ -67,9 +91,13 @@ namespace Gamekit3D
         /// </summary>
         private void TryExcuteNoramlAttack()
         {
-            if (m_Input.Attack)
+            if (m_Input.Attack && !m_IsBlockNormalAttack)
             {
+                // 攻击进入
                 m_Animator.SetTrigger(m_HashMeleeAttack);
+                // 间隔进入
+                ClearNormalAttackGapCoroutine();
+                m_normalAttackGapCoroutine = StartCoroutine(IENormalAttackGap(normalAttackDuring));
             }
         }
 
@@ -78,15 +106,30 @@ namespace Gamekit3D
         /// </summary>
         private void TryExcuteShotAttack()
         {
-            WeaponData currentWeaponData = EnsureWeaponData(m_WeaponIndex);
-            switch (currentWeaponData.trigger)
+            WeaponData weaponData = EnsureWeaponData(m_WeaponIndex);
+            if (!m_Input.Attack || weaponData.isBlockAttack)
+            {
+                return;
+            }
+
+            switch (weaponData.trigger)
             {
                 case WeaponTriggerType.Auto:                // 自动
                 {
+                    // 攻击进入
+                    Debug.Log("charsiew : [TryExcuteShotAttack] : --------------------- 全自动射击。");
+                    // 间隔进入
+                    if (weaponData.attackGapCoroutine != null) 
+                        StopCoroutine(weaponData.attackGapCoroutine);
+                    weaponData.attackGapCoroutine = StartCoroutine(weaponData.IENormalWeapon02Gap());
                     break;
                 }
                 case WeaponTriggerType.HalfAuto:            // 半自动
                 {
+                    // 攻击进入
+                    Debug.Log("charsiew : [TryExcuteShotAttack] : --------------------- 半自动射击。");
+                    // 间隔进入（区分武器槽位，考虑下怎么统一清理）
+                    weaponData.isBlockAttack = true;
                     break;
                 }
             }
@@ -144,36 +187,30 @@ namespace Gamekit3D
             m_Animator.SetLayerWeight(1, newIndex > WeaponIndex.First ? 1 : 0);
         }
 
-        private IEnumerator AttackWait(float wait)
+        #region 攻击间隔协程
+
+        // ======== 普通攻击 ========
+
+        private void ClearNormalAttackGapCoroutine()
         {
-            Debug.Log("charsiew : [AttackWait] : -------------------- 进入。"+wait);
-            m_IsBlockAttack = true;
-
-            yield return new WaitForSeconds(wait);
-
-            Debug.Log("charsiew : [AttackWait] : -------------------- 退出。"+wait);
-            m_IsBlockAttack = false;
-            m_AttackWaitCoroutine = StartCoroutine(AttackWait(wait));
+            if (m_normalAttackGapCoroutine != null)
+                StopCoroutine(m_normalAttackGapCoroutine);
         }
+
+        private IEnumerator IENormalAttackGap(float gap)
+        {
+            m_IsBlockNormalAttack = true;
+            yield return new WaitForSeconds(gap); // 等待指定间隔
+            m_IsBlockNormalAttack = false;
+        }
+
+        #endregion
 
         /// <summary>
         /// 攻击进入
         /// </summary>
         private void OnAttackEnter()
         {
-            float waitTime = normalAttackDuring;
-            if (m_WeaponIndex >= WeaponIndex.Second)
-            {
-                WeaponData currentWeaponData = EnsureWeaponData(m_WeaponIndex);
-                waitTime = currentWeaponData.weaponConfig.shotGap;
-            }
-            
-            // 携程重置
-            if (m_AttackWaitCoroutine != null)
-            {
-                StopCoroutine(m_AttackWaitCoroutine);
-            }
-            m_AttackWaitCoroutine = StartCoroutine(AttackWait(waitTime));
         }
 
         /// <summary>
@@ -181,11 +218,6 @@ namespace Gamekit3D
         /// </summary>
         private void OnAttackExit()
         {
-            // 携程清空
-            if (m_AttackWaitCoroutine != null)
-            {
-                StopCoroutine(m_AttackWaitCoroutine);
-            }
         }
 
         private void OnWeaponSwitcherAwake()
@@ -203,6 +235,13 @@ namespace Gamekit3D
         
         private void OnWeaponSwitcherDisable()
         {
+            // 数据清理
+            ClearNormalAttackGapCoroutine();
+            if (weapon02.attackGapCoroutine != null) 
+                StopCoroutine(weapon02.attackGapCoroutine);
+            if (weapon02.attackGapCoroutine != null) 
+                StopCoroutine(weapon02.attackGapCoroutine);
+            // 监听清理
             m_Input.onWeaponButtonDown.RemoveListener(OnWeaponButtonDown);
             m_Input.onAttackButtonDown.RemoveListener(OnAttackButtonDown);
             m_Input.onAttackButtonUp.RemoveListener(OnAttackButtonUp);

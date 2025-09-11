@@ -75,24 +75,12 @@ public class PlayerInput : MonoBehaviour
         get { return m_Jump && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
     }
 
-    // public bool Attack
-    // {
-    //     get { return m_Attack && !playerControllerInputBlocked && !m_ExternalInputBlocked; }
-    // }
-
-    public bool Attack => m_Attack;
+    public bool Attack => (m_Attack && !playerControllerInputBlocked);
 
     public bool Pause => m_Pause;
 
-    WaitForSeconds m_AttackInputWait;
-    Coroutine m_AttackWaitCoroutine;
-
-    const float k_AttackInputDuration = 0.03f;
-
     void Awake()
     {
-        m_AttackInputWait = new WaitForSeconds(k_AttackInputDuration);
-    
         if (s_Instance == null)
             s_Instance = this;
         else if (s_Instance != this)
@@ -105,13 +93,10 @@ public class PlayerInput : MonoBehaviour
         m_Movement.Set(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         m_Camera.Set(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         m_Jump = Input.GetButton("Jump");
+        m_Attack = Input.GetButton(m_AttackButtonKey);
 
         if (Input.GetButtonDown(m_AttackButtonKey))
         {
-            if (m_AttackWaitCoroutine != null)
-                StopCoroutine(m_AttackWaitCoroutine);
-
-            m_AttackWaitCoroutine = StartCoroutine(AttackWait());
             m_OnAttackButtonDown?.Invoke();
         }
 
@@ -146,15 +131,6 @@ public class PlayerInput : MonoBehaviour
         }
 
         m_Pause = Input.GetButtonDown ("Pause");
-    }
-
-    IEnumerator AttackWait()
-    {
-        m_Attack = true;
-
-        yield return m_AttackInputWait;
-
-        m_Attack = false;
     }
 
     public bool HaveControl()

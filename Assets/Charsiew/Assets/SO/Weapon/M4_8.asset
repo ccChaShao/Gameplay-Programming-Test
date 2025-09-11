@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 2001
   damage: 25
-  shotGap: 50
+  shotGap: 0.2
+  reloadTime: 1
   bulletCount: 30
   defaultTrigger: 2
   trigger: 3
