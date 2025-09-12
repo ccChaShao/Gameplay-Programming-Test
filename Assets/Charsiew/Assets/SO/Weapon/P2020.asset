@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d8f33fa44605d947849e8df34799689, type: 3}
-  m_Name: M4_8
+  m_Name: P2020
   m_EditorClassIdentifier: 
-  id: 2001
-  damage: 25
-  shotGap: 0.2
-  reloadTime: 3
-  bulletCount: 30
-  defaultTrigger: 2
-  trigger: 3
+  id: 1001
+  damage: 8
+  shotGap: -1
+  reloadTime: 1
+  bulletCount: 6
+  defaultTrigger: 1
+  trigger: 1
   muzzleName: Muzzle
-  weaponPrefab: {fileID: 1117582899397640, guid: 689946d975a0e55449b1e7ae41933e73,
+  weaponPrefab: {fileID: 1694449805434718, guid: f4294bb5ef762e245b5a5522624a929c,
     type: 3}
-  bulletConfig: {fileID: 11400000, guid: c6afc1c40d2ecb840a79e042c8dc8edc, type: 2}
+  bulletConfig: {fileID: 11400000, guid: 49498b55bc168a64c895199a51e7ae90, type: 2}

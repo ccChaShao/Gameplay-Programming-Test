@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b87e3e6697ebf8a49b2e34e09b67fb44, type: 3}
   m_Name: Bullet_01
   m_EditorClassIdentifier: Assembly-CSharp:charsiew:BulletConfig
-  bulletSpeed: 0
-  bulletPrefab: {fileID: 1062895056798360, guid: 8b4cba336c093ff41ae9321f9f8433d6,
+  bulletDamge: 2
+  bulletSpeed: 10
+  bulletAlive: 3
+  colliderLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  bulletPrefab: {fileID: 1062895056798360, guid: 9d157582deb07fc45809ef2852f55608,
     type: 3}

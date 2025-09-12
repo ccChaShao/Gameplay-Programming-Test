@@ -168,7 +168,7 @@ namespace Gamekit3D
             }
         }
 
-        private WeaponData EnsureWeaponData(WeaponIndex index, bool objActive = false)
+        private WeaponData EnsureWeaponData(WeaponIndex index)
         {
             WeaponData data = null; 
             
@@ -185,10 +185,11 @@ namespace Gamekit3D
                     GameObject gobj = Instantiate(data.weaponConfig.weaponPrefab, gunHolder);
                     gobj.transform.localPosition = Vector3.zero;
                     gobj.transform.localRotation = Quaternion.identity;
+                    gobj.SetActive(false);
                     data.gameObject = gobj;
                 }
                 // 枪口对象
-                if (!data.muzzleGameObject && data.gameObject)
+                if (!data.muzzleGameObject&& data.gameObject)
                 {
                     data.muzzleGameObject = data.gameObject.transform.Find(data.weaponConfig.muzzleName).gameObject;
                 }
@@ -201,8 +202,6 @@ namespace Gamekit3D
                     data.isBlockAttack = false;
                     data.isBlockReload = false;
                 }
-                // 显示初始化
-                data.gameObject.SetActive(objActive);
             }
 
             return data;
@@ -217,13 +216,18 @@ namespace Gamekit3D
             var preData = EnsureWeaponData(preIndex);
             if (preData != null)
             {
+                preData.gameObject.SetActive(false);
                 TryStopWeaponReloadGap(preIndex);
                 TryStopWeaponAttackGap(preIndex);
             }
 
             // 新武器进入
-            var newData = EnsureWeaponData(newIndex, true);
-
+            var newData = EnsureWeaponData(newIndex);
+            if (newData != null)
+            {
+                newData.gameObject.SetActive(true);
+            }
+            
             // 武器动画更新
             m_Animator.SetLayerWeight(1, newIndex > WeaponIndex.First ? 1 : 0);
         }
@@ -307,13 +311,25 @@ namespace Gamekit3D
                 // 远处一点为目标点
                 targetPoint = ray.GetPoint(shootConfig.maxShootDistance);
             
-            Vector3 shootDirection = (targetPoint - data.muzzleGameObject.transform.position).normalized;
+            var muzzle = data.muzzleGameObject.transform;
+            
+            var shootDirection = (targetPoint - muzzle.position).normalized;
+            var bulletConfig = data.weaponConfig.bulletConfig;
             
             // 执行射击
-            Debug.Log("charsiew : [DoShoot] : ------------- 执行射击。");
+            GameObject bullet = Instantiate(bulletConfig.bulletPrefab);
+            bullet.transform.position = muzzle.position;
+            bullet.transform.rotation = Quaternion.LookRotation(shootDirection);
+            BulletControler bulletControler = bullet.AddComponent<BulletControler>();
+            bulletControler.DataInit(
+                bulletConfig.bulletSpeed,
+                bulletConfig.bulletDamge,
+                bulletConfig.bulletAlive,
+                bulletConfig.colliderLayer
+            );
 
             // 可选：可视化调试射线
-            Debug.DrawRay(data.muzzleGameObject.transform.position, shootDirection * shootConfig.maxShootDistance, Color.red, 1f);
+            Debug.DrawRay(muzzle.position, shootDirection * shootConfig.maxShootDistance, Color.red, 1f);
         }
         
         /// <summary>
@@ -361,7 +377,6 @@ namespace Gamekit3D
         private void OnAttackEnter() { }
 
         private void OnAttackExit() { 
-            TryStopWeaponReloadGap(m_WeaponIndex);
             TryStopWeaponAttackGap(m_WeaponIndex);
         }
 

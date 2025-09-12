@@ -12,7 +12,7 @@ namespace Charsiew
     [CreateAssetMenu(menuName = "Charsiew Assets/SO Assets/Create Weapon Config", fileName = "New_Weapon_Config")]
     public class WeaponConfig : ScriptableObject
     {
-        [TitleGroup("基本信息")]
+        [TitleGroup("武器信息")]
         [LabelText("唯一ID")] public uint id;
     
         [LabelText("武器伤害")] public float damage;
@@ -29,11 +29,10 @@ namespace Charsiew
 
         [LabelText("枪口名称")] public string muzzleName = "Muzzle";
         
-        [LabelText("预制体资源")] public GameObject weaponPrefab;
+        [LabelText("武器预制体")] public GameObject weaponPrefab;
         
-        [FormerlySerializedAs("BulletConfig")]
-        [TitleGroup("额外信息")]
+        [TitleGroup("子弹信息")]
         
-        [LabelText("子弹")] public BulletConfig bulletConfig = new ();
+        [LabelText("子弹数据")] public BulletConfig bulletConfig;
     }
 }

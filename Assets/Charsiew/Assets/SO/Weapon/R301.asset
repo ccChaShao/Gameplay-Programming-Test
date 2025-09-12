@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d8f33fa44605d947849e8df34799689, type: 3}
-  m_Name: M1911
+  m_Name: R301
   m_EditorClassIdentifier: 
-  id: 1001
-  damage: 8
-  shotGap: -1
-  reloadTime: 1
-  bulletCount: 6
-  defaultTrigger: 1
-  trigger: 1
+  id: 2001
+  damage: 25
+  shotGap: 0.1
+  reloadTime: 3
+  bulletCount: 30
+  defaultTrigger: 2
+  trigger: 3
   muzzleName: Muzzle
-  weaponPrefab: {fileID: 1694449805434718, guid: 6f1a7354265853f44b0ed5e2e43676ad,
+  weaponPrefab: {fileID: 1117582899397640, guid: ae8d1f998b5935c4b92e2c99ed8ae02f,
     type: 3}
-  bulletConfig: {fileID: 11400000, guid: 49498b55bc168a64c895199a51e7ae90, type: 2}
+  bulletConfig: {fileID: 11400000, guid: c6afc1c40d2ecb840a79e042c8dc8edc, type: 2}
