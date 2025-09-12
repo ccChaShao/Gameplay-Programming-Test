@@ -16802,9 +16802,8 @@ MonoBehaviour:
   minTurnSpeed: 400
   maxTurnSpeed: 1200
   idleTimeout: 5
-  canAttack: 1
   currentState: 0
-  aimConfig: {fileID: 11400000, guid: aaf5f307658584d40910e84fb95b55c6, type: 2}
+  shootConfig: {fileID: 11400000, guid: aaf5f307658584d40910e84fb95b55c6, type: 2}
   cameraSettings: {fileID: 0}
   meleeWeapon: {fileID: 114298887321203036}
   footstepPlayer: {fileID: 114094828976615078}
@@ -16815,12 +16814,22 @@ MonoBehaviour:
   emoteAttackPlayer: {fileID: 114760947911017218}
   emoteJumpPlayer: {fileID: 114482031319434234}
   gunHolder: {fileID: 5532269875986773897}
+  normalAttackDuring: 0.5
+  isBlockNormalAttack: 0
   weapon02:
     weaponConfig: {fileID: 11400000, guid: 696bf6f7c7c13f34f86708dd6be32855, type: 2}
-    gameObject: {fileID: 0}
+    isInited: 0
+    isBlockAttack: 0
+    isBlockReload: 0
+    bulletCount: 0
+    trigger: 0
   weapon03:
     weaponConfig: {fileID: 11400000, guid: eade0eb937c163948b0f1f23a539bce5, type: 2}
-    gameObject: {fileID: 0}
+    isInited: 0
+    isBlockAttack: 0
+    isBlockReload: 0
+    bulletCount: 0
+    trigger: 0
 --- !u!114 &114166992771378430
 MonoBehaviour:
   m_ObjectHideFlags: 0

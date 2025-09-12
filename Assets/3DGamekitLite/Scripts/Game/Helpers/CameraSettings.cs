@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
 using Charsiew;
+using UnityEngine.Serialization;
 
 namespace Gamekit3D
 {
@@ -21,10 +22,11 @@ namespace Gamekit3D
             public bool invertY;
         }
 
+        public Camera mainCamera;
 
         public Transform follow;
         public Transform lookAt;
-        public Transform AimLookAt;
+        public Transform aimLookAt;
         public CinemachineFreeLook keyboardAndMouseCamera;
         public CinemachineFreeLook controllerCamera;
         public CinemachineVirtualCamera aimVirtualCamera;
@@ -67,7 +69,7 @@ namespace Gamekit3D
             PlayerController playerController = FindObjectOfType<PlayerController>();
             
             follow = playerController.transform;
-            AimLookAt = follow.Find("AimHeadTarget");
+            aimLookAt = follow.Find("AimHeadTarget");
             lookAt = follow.Find("HeadTarget");
         }
 
@@ -92,7 +94,7 @@ namespace Gamekit3D
             controllerCamera.LookAt = lookAt;
 
             aimVirtualCamera.Follow = follow;
-            aimVirtualCamera.LookAt = AimLookAt;
+            aimVirtualCamera.LookAt = aimLookAt;
 
             keyboardAndMouseCamera.Priority = inputChoice == InputChoice.KeyboardAndMouse ? 1 : 0;
             controllerCamera.Priority = inputChoice == InputChoice.Controller ? 1 : 0;

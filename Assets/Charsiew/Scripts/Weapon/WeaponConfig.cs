@@ -26,6 +26,8 @@ namespace Charsiew
         [LabelText("默认扳机类型"), EnumToggleButtons] public WeaponTriggerType defaultTrigger;
         
         [LabelText("扳机支持类型"), EnumToggleButtons] public WeaponTriggerType trigger;
+
+        [LabelText("枪口名称")] public string muzzleName = "Muzzle";
         
         [LabelText("预制体资源")] public GameObject weaponPrefab;
         

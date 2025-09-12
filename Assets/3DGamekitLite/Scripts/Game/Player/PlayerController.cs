@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 using Gamekit3D.Message;
 using System.Collections;
 using Charsiew;
 using Sirenix.OdinInspector;
+using UnityEngine.Serialization;
 using UnityEngine.XR.WSA;
 
 namespace Gamekit3D
@@ -26,7 +28,7 @@ namespace Gamekit3D
         #region Charsiew
 
         public CharacterState currentState;         // 当前状态
-        public AimConfig aimConfig;                 // 瞄准状态配置
+        public ShootConfig shootConfig;                 // 瞄准状态配置
 
         #endregion
 
@@ -155,7 +157,7 @@ namespace Gamekit3D
 
             #region partial
 
-            OnWeaponSwitcherAwake();
+            OnWeaponControlerAwake();
 
             #endregion
         }
@@ -179,7 +181,7 @@ namespace Gamekit3D
 
             #region partial
 
-            OnWeaponSwitcherEnable();
+            OnWeaponControlerEnable();
 
             #endregion
         }
@@ -199,7 +201,7 @@ namespace Gamekit3D
 
             #region partial
 
-            OnWeaponSwitcherDisable();
+            OnWeaponControlerDisable();
 
             #endregion
         }
@@ -257,6 +259,10 @@ namespace Gamekit3D
             m_PreviouslyGrounded = m_IsGrounded;
         }
 
+        void Update()
+        {
+        }
+
         /// <summary>
         /// 获取动画方向移动量
         /// </summary>
@@ -280,8 +286,8 @@ namespace Gamekit3D
         private void UpdateAimOrientation()
         {
             // 获取鼠标输入
-            float mouseX = m_Input.CameraInput.x * aimConfig.mouseSensitivity * Time.deltaTime;
-            float mouseY = m_Input.CameraInput.y * aimConfig.mouseSensitivity * Time.deltaTime;
+            float mouseX = m_Input.CameraInput.x * shootConfig.mouseSensitivity * Time.deltaTime;
+            float mouseY = m_Input.CameraInput.y * shootConfig.mouseSensitivity * Time.deltaTime;
             
             // 朝向
             transform.Rotate(Vector3.up * mouseX);

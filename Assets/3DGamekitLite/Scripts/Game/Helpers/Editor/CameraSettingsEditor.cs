@@ -13,7 +13,6 @@ namespace Gamekit3D
         SerializedProperty m_LookAtProp;
         SerializedProperty m_KeyboardAndMouseCameraProp;
         SerializedProperty m_ControllerCameraProp;
-        SerializedProperty m_AimVirtualCameraProp;
         SerializedProperty m_InputChoiceProp;
         SerializedProperty m_KeyboardAndMouseInvertSettingsProp;
         SerializedProperty m_KeyboardAndMouseInvertSettingsInvertXProp;
@@ -23,12 +22,14 @@ namespace Gamekit3D
         SerializedProperty m_ControllerInvertSettingsInvertYProp;
         SerializedProperty m_AllowRuntimeCameraSettingsChangesProp;
 
+        private SerializedProperty m_MainCameraProp;
+        private  SerializedProperty m_AimVirtualCameraProp;
+
         GUIContent m_ScriptContent = new GUIContent("Script");
         GUIContent m_FollowContent = new GUIContent("Follow", "Used to determine how the cameras move.  It should be set to Ellen.");
         GUIContent m_LookAtContent = new GUIContent("Look At", "Used to determine how the cameras aim.  It should be set to HeadTarget (this is a child within Ellen's hierarchy).");
         GUIContent m_KeyboardAndMouseCameraContent = new GUIContent("Keyboard And Mouse Camera", "Used to control the camera position when the keyboard and mouse are being used as input.");
         GUIContent m_ControllerCameraContent = new GUIContent("Controller Camera", "Used to control the camera position when the controller is being used as input.");
-        GUIContent m_AimVirtualCameraContent = new GUIContent("瞄准状态相机", "没啥需要提示的。");
         GUIContent m_InputChoiceContent = new GUIContent("Input Choice", "How you wish to control the player - using a keyboard and mouse or a controller.  Selecting each will change which virtual camera is used.  The virtual cameras differ slightly in order to feel nice for their control method.");
         GUIContent m_KeyboardAndMouseInvertSettingsContent = new GUIContent("Keyboard And Mouse Invert Settings", "How the camera should respond to input in the X and Y axes when the Input Choice is set to Keyboard and Mouse.");
         GUIContent m_KeyboardAndMouseInvertSettingsInvertXContent = new GUIContent("Invert X");
@@ -37,6 +38,9 @@ namespace Gamekit3D
         GUIContent m_ControllerInvertSettingsInvertXContent = new GUIContent("Invert X");
         GUIContent m_ControllerInvertSettingsInvertYContent = new GUIContent("Invert Y");
         GUIContent m_AllowRuntimeCameraSettingsChangesContent = new GUIContent("Allow Runtime Camera Settings Changes", "When checked this makes it possible to change the Camera Settings' fields while the game is playing in order to test out what feels nice.");
+        
+        private GUIContent m_MainCameraContent = new ("主相机");
+        private GUIContent m_AimVirtualCameraContent = new ("瞄准状态相机");
 
         void OnEnable()
         {
@@ -45,7 +49,6 @@ namespace Gamekit3D
             m_LookAtProp = serializedObject.FindProperty("lookAt");
             m_KeyboardAndMouseCameraProp = serializedObject.FindProperty("keyboardAndMouseCamera");
             m_ControllerCameraProp = serializedObject.FindProperty("controllerCamera");
-            m_AimVirtualCameraProp = serializedObject.FindProperty("aimVirtualCamera");
             m_InputChoiceProp = serializedObject.FindProperty("inputChoice");
             m_KeyboardAndMouseInvertSettingsProp = serializedObject.FindProperty("keyboardAndMouseInvertSettings");
             m_KeyboardAndMouseInvertSettingsInvertXProp = m_KeyboardAndMouseInvertSettingsProp.FindPropertyRelative("invertX");
@@ -54,6 +57,9 @@ namespace Gamekit3D
             m_ControllerInvertSettingsInvertXProp = m_ControllerInvertSettingsProp.FindPropertyRelative("invertX");
             m_ControllerInvertSettingsInvertYProp = m_ControllerInvertSettingsProp.FindPropertyRelative("invertY");
             m_AllowRuntimeCameraSettingsChangesProp = serializedObject.FindProperty("allowRuntimeCameraSettingsChanges");
+            
+            m_MainCameraProp = serializedObject.FindProperty("mainCamera");
+            m_AimVirtualCameraProp = serializedObject.FindProperty("aimVirtualCamera");
         }
 
         public override void OnInspectorGUI()
@@ -68,8 +74,10 @@ namespace Gamekit3D
             EditorGUILayout.PropertyField(m_LookAtProp, m_LookAtContent);
             EditorGUILayout.PropertyField(m_KeyboardAndMouseCameraProp, m_KeyboardAndMouseCameraContent);
             EditorGUILayout.PropertyField(m_ControllerCameraProp, m_ControllerCameraContent);
-            EditorGUILayout.PropertyField(m_AimVirtualCameraProp, m_AimVirtualCameraContent);
             EditorGUILayout.PropertyField(m_InputChoiceProp, m_InputChoiceContent);
+            
+            EditorGUILayout.PropertyField(m_MainCameraProp, m_MainCameraContent);
+            EditorGUILayout.PropertyField(m_AimVirtualCameraProp, m_AimVirtualCameraContent);
 
             GUI.enabled = m_InputChoiceProp.intValue == 0;
             EditorGUILayout.LabelField(m_KeyboardAndMouseInvertSettingsContent);

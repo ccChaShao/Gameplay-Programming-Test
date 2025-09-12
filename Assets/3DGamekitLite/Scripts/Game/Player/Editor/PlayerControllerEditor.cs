@@ -31,7 +31,7 @@ namespace Gamekit3D
         private SerializedProperty m_NormalAttackDuringProp;
         
         private SerializedProperty m_CurrentStateProp;
-        private SerializedProperty m_AimConfigProp;
+        private SerializedProperty m_ShootConfigProp;
 
         private SerializedProperty m_GunHolderProp;
         private SerializedProperty m_Weapon02Prop;
@@ -58,7 +58,7 @@ namespace Gamekit3D
         GUIContent m_NormalAttackDuringContent = new ("普通攻击间隔");
         
         GUIContent m_CurrentStateContent = new ("当前角色状态");
-        GUIContent m_AimConfigContent = new ("瞄准状态配置");
+        GUIContent m_ShootConfigContent = new ("射击状态配置");
         
         GUIContent m_GunHolderContent = new ("枪械握持点");
         GUIContent m_Weapon02Content = new ("二号武器配置");
@@ -88,7 +88,7 @@ namespace Gamekit3D
             m_NormalAttackDuringProp = serializedObject.FindProperty("normalAttackDuring");
             
             m_CurrentStateProp = serializedObject.FindProperty("currentState");
-            m_AimConfigProp = serializedObject.FindProperty("aimConfig");
+            m_ShootConfigProp = serializedObject.FindProperty("shootConfig");
 
             m_GunHolderProp = serializedObject.FindProperty("gunHolder");
             m_Weapon02Prop = serializedObject.FindProperty("weapon02");
@@ -132,7 +132,7 @@ namespace Gamekit3D
                 
                 EditorGUILayout.PropertyField(m_NormalAttackDuringProp, m_NormalAttackDuringContent);
                 EditorGUILayout.PropertyField(m_CurrentStateProp, m_CurrentStateContent);
-                EditorGUILayout.PropertyField(m_AimConfigProp, m_AimConfigContent);
+                EditorGUILayout.PropertyField(m_ShootConfigProp, m_ShootConfigContent);
                 
                 EditorGUI.indentLevel--;
             }

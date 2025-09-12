@@ -27,6 +27,7 @@ namespace Gamekit3D
         
         // private data
         private GameObject m_GameObject;
+        private GameObject m_MuzzleGameObject;
         private Coroutine m_AttackGapCoroutine;
         private Coroutine m_ReloadGapCoroutine;
 
@@ -34,6 +35,12 @@ namespace Gamekit3D
         {
             get => m_GameObject;
             set => m_GameObject = value;
+        }
+
+        public GameObject muzzleGameObject
+        {
+            get => m_MuzzleGameObject;
+            set => m_MuzzleGameObject = value;
         }
 
         public Coroutine attackGapCoroutine
@@ -81,6 +88,8 @@ namespace Gamekit3D
         // 状态参数
         private WeaponIndex m_WeaponIndex = WeaponIndex.First;          // 当前武器下标（物理序号）
         private Coroutine m_normalAttackGapCoroutine;
+        
+        private Vector2 screenCenter = new (Screen.width / 2, Screen.height / 2);
 
         private void TryAttack()
         {
@@ -139,19 +148,20 @@ namespace Gamekit3D
             
             // 数据更新
             data.bulletCount -= 1;
+            
+            // 射击执行
+            DoShoot();
 
-            // 攻击执行
+            // 间隔处理
             switch (data.trigger)
             {
                 case WeaponTriggerType.Auto:                // 自动
                 {
-                    Debug.Log("charsiew : [TryExcuteShotAttack] : --------------------- 全自动射击。");
                     TryStartWeaponAttackGap(m_WeaponIndex);
                     break;
                 }
                 case WeaponTriggerType.HalfAuto:            // 半自动
                 {
-                    Debug.Log("charsiew : [TryExcuteShotAttack] : --------------------- 半自动射击。");
                     data.isBlockAttack = true;
                     break;
                 }
@@ -176,6 +186,11 @@ namespace Gamekit3D
                     gobj.transform.localPosition = Vector3.zero;
                     gobj.transform.localRotation = Quaternion.identity;
                     data.gameObject = gobj;
+                }
+                // 枪口对象
+                if (!data.muzzleGameObject && data.gameObject)
+                {
+                    data.muzzleGameObject = data.gameObject.transform.Find(data.weaponConfig.muzzleName).gameObject;
                 }
                 // 运行时数据初始化
                 if (!data.isInited)
@@ -275,11 +290,36 @@ namespace Gamekit3D
                 StopCoroutine(data.attackGapCoroutine);
             data.isBlockAttack = false;
         }
+
+        private void DoShoot()
+        {
+            var data = EnsureWeaponData(m_WeaponIndex);
+            if (data == null)
+                return;
+            Ray ray = cameraSettings.mainCamera.ScreenPointToRay(screenCenter);
+            
+            Vector3 targetPoint;
+            
+            if (Physics.Raycast(ray, out RaycastHit raycastHit, shootConfig.maxShootDistance, shootConfig.shootLayerMask))
+                // 击中点为目标点
+                targetPoint = raycastHit.point;         
+            else
+                // 远处一点为目标点
+                targetPoint = ray.GetPoint(shootConfig.maxShootDistance);
+            
+            Vector3 shootDirection = (targetPoint - data.muzzleGameObject.transform.position).normalized;
+            
+            // 执行射击
+            Debug.Log("charsiew : [DoShoot] : ------------- 执行射击。");
+
+            // 可选：可视化调试射线
+            Debug.DrawRay(data.muzzleGameObject.transform.position, shootDirection * shootConfig.maxShootDistance, Color.red, 1f);
+        }
         
         /// <summary>
         /// Mono Awake
         /// </summary>
-        private void OnWeaponSwitcherAwake()
+        private void OnWeaponControlerAwake()
         {
             EnsureWeaponData(WeaponIndex.Third);
             EnsureWeaponData(WeaponIndex.Second);
@@ -288,7 +328,7 @@ namespace Gamekit3D
         /// <summary>
         /// Mono OnEnable
         /// </summary>
-        private void OnWeaponSwitcherEnable()
+        private void OnWeaponControlerEnable()
         {
             m_Input.onWeaponButtonDown.AddListener(OnWeaponButtonDown);
             m_Input.onAttackButtonDown.AddListener(OnAttackButtonDown);
@@ -302,7 +342,7 @@ namespace Gamekit3D
         /// <summary>
         /// Mono OnDisable
         /// </summary>
-        private void OnWeaponSwitcherDisable()
+        private void OnWeaponControlerDisable()
         {
             // 数据清理
             weapon02.isInited = false;

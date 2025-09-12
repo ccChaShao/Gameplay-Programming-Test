@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 1039473416030948}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.00000047683716, y: 1.8800001, z: -3.999998}
+  m_LocalPosition: {x: 22.840008, y: -6.9929976, z: 62.059998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -857,9 +857,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbb9ea12b87a6cf42967519fe0995233, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 20494501241764970}
   follow: {fileID: 0}
   lookAt: {fileID: 0}
-  AimLookAt: {fileID: 0}
+  aimLookAt: {fileID: 0}
   keyboardAndMouseCamera: {fileID: 114761749801698018}
   controllerCamera: {fileID: 114334557014682562}
   aimVirtualCamera: {fileID: 5235421939939669609}
