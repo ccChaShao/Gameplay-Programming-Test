@@ -47,6 +47,20 @@ public class PlayerInput : MonoBehaviour
     protected UnityEvent m_OnAttackButtonUp = new ();
     public UnityEvent onAttackButtonDown => m_OnAttackButtonDown;
     public UnityEvent onAttackButtonUp => m_OnAttackButtonUp;
+    
+    // 上弹按钮
+    protected const string m_ReloadButtonKey = "Reload";
+    protected UnityEvent m_OnReloadButtonDown = new ();
+    protected UnityEvent m_OnReloadButtonUp = new ();
+    public UnityEvent onReloadButtonDown => m_OnReloadButtonDown;
+    public UnityEvent onReloadButtonUp => m_OnReloadButtonUp;
+    
+    // 扳机切换按钮
+    protected const string m_ChangeTriggerKey = "ChangeTrigger";
+    protected UnityEvent m_OnChangeTriggerButtonDown = new ();
+    protected UnityEvent m_OnChangeTriggerButtonUp = new ();
+    public UnityEvent onChangeTriggerButtonDown => m_OnChangeTriggerButtonDown;
+    public UnityEvent OnChangeTriggerButtonUp => m_OnChangeTriggerButtonUp;
 
     #endregion
 
@@ -94,41 +108,38 @@ public class PlayerInput : MonoBehaviour
         m_Camera.Set(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         m_Jump = Input.GetButton("Jump");
         m_Attack = Input.GetButton(m_AttackButtonKey);
+        
 
         if (Input.GetButtonDown(m_AttackButtonKey))
-        {
             m_OnAttackButtonDown?.Invoke();
-        }
-
         if (Input.GetButtonUp(m_AttackButtonKey))
-        {
             m_OnAttackButtonUp?.Invoke();
-        }
+        
 
         if (Input.GetButtonDown(m_AimButtonKey))
-        {
             m_OnAimButtonDown?.Invoke();
-        }
-
         if (Input.GetButtonUp(m_AimButtonKey))
-        {
             onAimButtonUp?.Invoke();
-        }
+        
 
         if (Input.GetButtonDown(m_FirstWeaponButtonKey))
-        {
             m_OnWeaponButtonDown?.Invoke(WeaponIndex.First);
-        }
-
         if (Input.GetButtonDown(m_SecondWeaponButtonKey))
-        {
             m_OnWeaponButtonDown?.Invoke(WeaponIndex.Second);
-        }
-
         if (Input.GetButtonDown(m_ThirdWeaponButtonKey))
-        {
             m_OnWeaponButtonDown?.Invoke(WeaponIndex.Third);
-        }
+        
+
+        if (Input.GetButtonDown(m_ReloadButtonKey))
+            m_OnReloadButtonDown?.Invoke();
+        if (Input.GetButtonUp(m_ReloadButtonKey))
+            m_OnReloadButtonUp?.Invoke();
+        
+
+        if (Input.GetButtonDown(m_ChangeTriggerKey))
+            m_OnChangeTriggerButtonDown?.Invoke();
+        if (Input.GetButtonUp(m_ChangeTriggerKey))
+            m_OnChangeTriggerButtonUp?.Invoke();
 
         m_Pause = Input.GetButtonDown ("Pause");
     }

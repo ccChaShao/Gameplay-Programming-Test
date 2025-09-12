@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Charsiew;
 using System;
+using UnityEngine.Serialization;
 
 namespace Gamekit3D
 {
@@ -19,12 +20,21 @@ namespace Gamekit3D
         [HideInInspector] public bool isInited = false;
         
         // run time data
-        [HideInInspector] public uint bulletCount = 0;            
-        [HideInInspector] public WeaponTriggerType trigger;
-        [HideInInspector] public GameObject gameObject;
+        public bool isBlockAttack = false;          // 攻击🔒
+        public bool isBlockReload = false;          // 上弹🔒
+        public uint bulletCount = 0;            
+        public WeaponTriggerType trigger;
         
-        private bool m_IsBlockAttack = false;
+        // private data
+        private GameObject m_GameObject;
         private Coroutine m_AttackGapCoroutine;
+        private Coroutine m_ReloadGapCoroutine;
+
+        public GameObject gameObject
+        {
+            get => m_GameObject;
+            set => m_GameObject = value;
+        }
 
         public Coroutine attackGapCoroutine
         {
@@ -32,17 +42,26 @@ namespace Gamekit3D
             set => m_AttackGapCoroutine = value;
         }
 
-        public bool isBlockAttack
+        public Coroutine reloadGapCoroutine
         {
-            get => m_IsBlockAttack;
-            set => m_IsBlockAttack = value;
+            get => m_ReloadGapCoroutine;
+            set => m_ReloadGapCoroutine = value;
         }
 
-        public IEnumerator IENormalWeapon02Gap()
+        public IEnumerator IEAttackGap()
         {
-            m_IsBlockAttack = true;
+            isBlockAttack = true;
             yield return new WaitForSeconds(weaponConfig.shotGap);
-            m_IsBlockAttack = false;
+            isBlockAttack = false;
+        }
+
+        public IEnumerator IERealoadGap()
+        {
+            bulletCount = 0;
+            isBlockReload = true;
+            yield return new WaitForSeconds(weaponConfig.reloadTime);
+            bulletCount = weaponConfig.bulletCount;
+            isBlockReload = false;
         }
     }
     
@@ -53,17 +72,15 @@ namespace Gamekit3D
         
         // 近战攻击
         public float normalAttackDuring = 2.0f;
-        private bool m_IsBlockNormalAttack = false;
-        private Coroutine m_normalAttackGapCoroutine;
+        public bool isBlockNormalAttack = false;
         
-        // 武器栏
+        // 二三号武器槽
         public WeaponData weapon02 = new();
-        private Coroutine m_Weapon02GapCoroutine;
         public WeaponData weapon03 = new();
-        private Coroutine m_Weapon03GapCoroutine;
         
         // 状态参数
         private WeaponIndex m_WeaponIndex = WeaponIndex.First;          // 当前武器下标（物理序号）
+        private Coroutine m_normalAttackGapCoroutine;
 
         private void TryAttack()
         {
@@ -91,7 +108,7 @@ namespace Gamekit3D
         /// </summary>
         private void TryExcuteNoramlAttack()
         {
-            if (m_Input.Attack && !m_IsBlockNormalAttack)
+            if (m_Input.Attack && !isBlockNormalAttack)
             {
                 // 攻击进入
                 m_Animator.SetTrigger(m_HashMeleeAttack);
@@ -106,30 +123,36 @@ namespace Gamekit3D
         /// </summary>
         private void TryExcuteShotAttack()
         {
-            WeaponData weaponData = EnsureWeaponData(m_WeaponIndex);
-            if (!m_Input.Attack || weaponData.isBlockAttack)
+            WeaponData data = EnsureWeaponData(m_WeaponIndex);
+            if (data == null)
+                return;
+            // 基础间隔判断
+            if (!m_Input.Attack || data.isBlockAttack)
+                return;
+            
+            // 子弹数量判断
+            if (data.bulletCount <= 0)
             {
+                TryStartReloadWeapon(m_WeaponIndex);        // 尝试上弹
                 return;
             }
+            
+            // 数据更新
+            data.bulletCount -= 1;
 
-            switch (weaponData.trigger)
+            // 攻击执行
+            switch (data.trigger)
             {
                 case WeaponTriggerType.Auto:                // 自动
                 {
-                    // 攻击进入
                     Debug.Log("charsiew : [TryExcuteShotAttack] : --------------------- 全自动射击。");
-                    // 间隔进入
-                    if (weaponData.attackGapCoroutine != null) 
-                        StopCoroutine(weaponData.attackGapCoroutine);
-                    weaponData.attackGapCoroutine = StartCoroutine(weaponData.IENormalWeapon02Gap());
+                    TryStartWeaponAttackGap(m_WeaponIndex);
                     break;
                 }
                 case WeaponTriggerType.HalfAuto:            // 半自动
                 {
-                    // 攻击进入
                     Debug.Log("charsiew : [TryExcuteShotAttack] : --------------------- 半自动射击。");
-                    // 间隔进入（区分武器槽位，考虑下怎么统一清理）
-                    weaponData.isBlockAttack = true;
+                    data.isBlockAttack = true;
                     break;
                 }
             }
@@ -137,57 +160,58 @@ namespace Gamekit3D
 
         private WeaponData EnsureWeaponData(WeaponIndex index, bool objActive = false)
         {
-            WeaponData weaponData = null; 
+            WeaponData data = null; 
             
             if (index == WeaponIndex.Second)
-            {
-                weaponData = weapon02;
-            }
+                data = weapon02;
             else if(index == WeaponIndex.Third)
-            {
-                weaponData = weapon03;
-            }
+                data = weapon03;
 
-            if (weaponData != null)
+            if (data != null)
             {
                 // 实例初始化
-                if (!weaponData.gameObject)
+                if (!data.gameObject)
                 {
-                    GameObject gobj = Instantiate(weaponData.weaponConfig.weaponPrefab, gunHolder);
+                    GameObject gobj = Instantiate(data.weaponConfig.weaponPrefab, gunHolder);
                     gobj.transform.localPosition = Vector3.zero;
                     gobj.transform.localRotation = Quaternion.identity;
-                    weaponData.gameObject = gobj;
+                    data.gameObject = gobj;
                 }
                 // 运行时数据初始化
-                if (!weaponData.isInited)
+                if (!data.isInited)
                 {
-                    weaponData.bulletCount = weaponData.weaponConfig.bulletCount;
-                    weaponData.trigger = weaponData.weaponConfig.defaultTrigger;
-                    weaponData.isInited = true;
+                    data.bulletCount = data.weaponConfig.bulletCount;
+                    data.trigger = data.weaponConfig.defaultTrigger;
+                    data.isInited = true;
+                    data.isBlockAttack = false;
+                    data.isBlockReload = false;
                 }
                 // 显示初始化
-                weaponData.gameObject.SetActive(objActive);
+                data.gameObject.SetActive(objActive);
             }
 
-            return weaponData;
+            return data;
         }
 
         private void ChangeWeaponIndex(WeaponIndex newIndex)
         {
-            var pre = m_WeaponIndex;
+            var preIndex = m_WeaponIndex;
             m_WeaponIndex = newIndex;
             
             // 旧武器退出
-            EnsureWeaponData(pre);
+            var preData = EnsureWeaponData(preIndex);
+            if (preData != null)
+            {
+                TryStopWeaponReloadGap(preIndex);
+                TryStopWeaponAttackGap(preIndex);
+            }
 
             // 新武器进入
-            EnsureWeaponData(newIndex, true);
+            var newData = EnsureWeaponData(newIndex, true);
 
             // 武器动画更新
             m_Animator.SetLayerWeight(1, newIndex > WeaponIndex.First ? 1 : 0);
         }
-
-        #region 攻击间隔协程
 
         // ======== 普通攻击 ========
 
@@ -199,57 +223,111 @@ namespace Gamekit3D
 
         private IEnumerator IENormalAttackGap(float gap)
         {
-            m_IsBlockNormalAttack = true;
+            isBlockNormalAttack = true;
             yield return new WaitForSeconds(gap); // 等待指定间隔
-            m_IsBlockNormalAttack = false;
+            isBlockNormalAttack = false;
         }
+        
+        // ======== 二三号武器槽位 ========
 
-        #endregion
-
-        /// <summary>
-        /// 攻击进入
-        /// </summary>
-        private void OnAttackEnter()
+        private void TryStartReloadWeapon(WeaponIndex index)
         {
+            var data = EnsureWeaponData(index);
+            if (data == null)
+                return;
+            if (data.isBlockReload)
+            {
+                return;
+            }
+            // 清理
+            if (data.reloadGapCoroutine != null)
+                StopCoroutine(data.reloadGapCoroutine);
+            // 执行
+            data.reloadGapCoroutine = StartCoroutine(data.IERealoadGap());
         }
 
-        /// <summary>
-        /// 攻击退出
-        /// </summary>
-        private void OnAttackExit()
+        private void TryStopWeaponReloadGap(WeaponIndex index)
         {
+            var data = EnsureWeaponData(index);
+            if (data == null)
+                return;
+            if (data.reloadGapCoroutine != null)
+                StopCoroutine(data.reloadGapCoroutine);
+            data.isBlockReload = false;
         }
 
+        private void TryStartWeaponAttackGap(WeaponIndex index)
+        {
+            var data = EnsureWeaponData(index);
+            if (data == null)
+                return;
+            if (data.attackGapCoroutine != null) 
+                StopCoroutine(data.attackGapCoroutine);
+            data.attackGapCoroutine = StartCoroutine(data.IEAttackGap());
+        }
+
+        private void TryStopWeaponAttackGap(WeaponIndex index)
+        {
+            var data = EnsureWeaponData(index);
+            if (data == null)
+                return;
+            if (data.attackGapCoroutine != null)
+                StopCoroutine(data.attackGapCoroutine);
+            data.isBlockAttack = false;
+        }
+        
+        /// <summary>
+        /// Mono Awake
+        /// </summary>
         private void OnWeaponSwitcherAwake()
         {
             EnsureWeaponData(WeaponIndex.Third);
             EnsureWeaponData(WeaponIndex.Second);
         }
         
+        /// <summary>
+        /// Mono OnEnable
+        /// </summary>
         private void OnWeaponSwitcherEnable()
         {
             m_Input.onWeaponButtonDown.AddListener(OnWeaponButtonDown);
             m_Input.onAttackButtonDown.AddListener(OnAttackButtonDown);
             m_Input.onAttackButtonUp.AddListener(OnAttackButtonUp);
+            m_Input.onReloadButtonDown.AddListener(OnReloadButtonDown);
+            m_Input.onReloadButtonUp.AddListener(OnReloadButtonUp);
+            m_Input.onChangeTriggerButtonDown.AddListener(OnChangeTriggerButtonDown);
+            m_Input.OnChangeTriggerButtonUp.AddListener(OnChangeTriggerButtonUp);
         }
         
+        /// <summary>
+        /// Mono OnDisable
+        /// </summary>
         private void OnWeaponSwitcherDisable()
         {
             // 数据清理
-            ClearNormalAttackGapCoroutine();
-            if (weapon02.attackGapCoroutine != null) 
-                StopCoroutine(weapon02.attackGapCoroutine);
-            if (weapon02.attackGapCoroutine != null) 
-                StopCoroutine(weapon02.attackGapCoroutine);
+            weapon02.isInited = false;
+            weapon03.isInited = false;
+            StopAllCoroutines();
             // 监听清理
             m_Input.onWeaponButtonDown.RemoveListener(OnWeaponButtonDown);
             m_Input.onAttackButtonDown.RemoveListener(OnAttackButtonDown);
             m_Input.onAttackButtonUp.RemoveListener(OnAttackButtonUp);
+            m_Input.onReloadButtonDown.RemoveListener(OnReloadButtonDown);
+            m_Input.onReloadButtonUp.RemoveListener(OnReloadButtonUp);
+            m_Input.onChangeTriggerButtonDown.RemoveListener(OnChangeTriggerButtonDown);
+            m_Input.OnChangeTriggerButtonUp.RemoveListener(OnChangeTriggerButtonUp);
         }
 
-        private void OnWeaponButtonDown(WeaponIndex newIndex)
+        private void OnAttackEnter() { }
+
+        private void OnAttackExit() { 
+            TryStopWeaponReloadGap(m_WeaponIndex);
+            TryStopWeaponAttackGap(m_WeaponIndex);
+        }
+
+        private void OnWeaponButtonDown(WeaponIndex index)
         {
-            ChangeWeaponIndex(newIndex);
+            ChangeWeaponIndex(index);
         }
 
         private void OnAttackButtonDown()
@@ -261,5 +339,16 @@ namespace Gamekit3D
         {
             OnAttackExit();
         }
+
+        private void OnReloadButtonDown()
+        {
+            TryStartReloadWeapon(m_WeaponIndex);
+        }
+
+        private void OnReloadButtonUp() { }
+
+        private void OnChangeTriggerButtonDown() { }
+
+        private void OnChangeTriggerButtonUp() { }
     }
 }
