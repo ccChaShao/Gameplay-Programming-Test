@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: R301
   m_EditorClassIdentifier: 
   id: 2001
-  damage: 25
+  damge: 0
   shotGap: 0.1
   reloadTime: 3
   bulletCount: 30
@@ -22,4 +22,10 @@ MonoBehaviour:
   muzzleName: Muzzle
   weaponPrefab: {fileID: 1117582899397640, guid: ae8d1f998b5935c4b92e2c99ed8ae02f,
     type: 3}
-  bulletConfig: {fileID: 11400000, guid: c6afc1c40d2ecb840a79e042c8dc8edc, type: 2}
+  bulletSpeed: 30
+  bulletAlive: 4
+  colliderLayer:
+    serializedVersion: 2
+    m_Bits: 4294954807
+  bulletPrefab: {fileID: 1698056052845220, guid: bbd6c58f30fa7b14e8f43dfdce5bf213,
+    type: 3}

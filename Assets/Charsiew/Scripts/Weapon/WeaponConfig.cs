@@ -15,7 +15,7 @@ namespace Charsiew
         [TitleGroup("武器信息")]
         [LabelText("唯一ID")] public uint id;
     
-        [LabelText("武器伤害")] public float damage;
+        [LabelText("武器伤害")] public float damge;
 
         [LabelText("射击间隔")] public float shotGap;
         
@@ -33,6 +33,12 @@ namespace Charsiew
         
         [TitleGroup("子弹信息")]
         
-        [LabelText("子弹数据")] public BulletConfig bulletConfig;
+        [LabelText("子弹速度")] public float bulletSpeed;
+        
+        [LabelText("子弹存活")] public float bulletAlive;
+        
+        [LabelText("碰撞层级")] public LayerMask colliderLayer;
+        
+        [LabelText("预制体资源")] public GameObject bulletPrefab;
     }
 }

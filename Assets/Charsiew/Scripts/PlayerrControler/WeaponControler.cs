@@ -314,18 +314,18 @@ namespace Gamekit3D
             var muzzle = data.muzzleGameObject.transform;
             
             var shootDirection = (targetPoint - muzzle.position).normalized;
-            var bulletConfig = data.weaponConfig.bulletConfig;
+            var weaponConfig = data.weaponConfig;
             
             // 执行射击
-            GameObject bullet = Instantiate(bulletConfig.bulletPrefab);
+            GameObject bullet = Instantiate(weaponConfig.bulletPrefab);
             bullet.transform.position = muzzle.position;
             bullet.transform.rotation = Quaternion.LookRotation(shootDirection);
             BulletControler bulletControler = bullet.AddComponent<BulletControler>();
             bulletControler.DataInit(
-                bulletConfig.bulletSpeed,
-                bulletConfig.bulletDamge,
-                bulletConfig.bulletAlive,
-                bulletConfig.colliderLayer
+                weaponConfig.bulletSpeed,
+                weaponConfig.damge,
+                weaponConfig.bulletAlive,
+                weaponConfig.colliderLayer
             );
 
             // 可选：可视化调试射线

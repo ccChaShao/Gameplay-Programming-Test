@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: P2020
   m_EditorClassIdentifier: 
   id: 1001
-  damage: 8
+  damge: 0
   shotGap: -1
   reloadTime: 1
   bulletCount: 6
@@ -22,4 +22,10 @@ MonoBehaviour:
   muzzleName: Muzzle
   weaponPrefab: {fileID: 1694449805434718, guid: f4294bb5ef762e245b5a5522624a929c,
     type: 3}
-  bulletConfig: {fileID: 11400000, guid: 49498b55bc168a64c895199a51e7ae90, type: 2}
+  bulletSpeed: 10
+  bulletAlive: 2
+  colliderLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  bulletPrefab: {fileID: 1062895056798360, guid: 9d157582deb07fc45809ef2852f55608,
+    type: 3}
