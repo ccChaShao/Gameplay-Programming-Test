@@ -432,7 +432,9 @@ namespace Gamekit3D
             float vHeight = 20;
             
             // 基本状态信息
-            GUI.Toggle(new Rect(startPos.x, startPos.y, 200, vHeight), currentState == CharacterState.ShotState, "瞄准状态");
+            startPos.Set(startPos.x, startPos.y + 50);
+            GUI.Label(new Rect(startPos.x, startPos.y, 200, vHeight), $"武器下标：{m_WeaponIndex}");
+            GUI.Toggle(new Rect(startPos.x, startPos.y + vHeight, 200, vHeight), currentState == CharacterState.ShotState, "瞄准状态");
             
             // 二号武器信息
             startPos.Set(startPos.x, startPos.y + 50);
