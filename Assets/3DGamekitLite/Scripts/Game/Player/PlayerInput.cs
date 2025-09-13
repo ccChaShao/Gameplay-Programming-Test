@@ -25,8 +25,6 @@ public class PlayerInput : MonoBehaviour
     protected bool m_Pause;
     protected bool m_ExternalInputBlocked;
 
-    #region Charsiew
-
     // 瞄准按钮
     protected const string m_AimButtonKey = "Aim"; 
     protected UnityEvent m_OnAimButtonDown = new ();
@@ -61,8 +59,6 @@ public class PlayerInput : MonoBehaviour
     protected UnityEvent m_OnChangeTriggerButtonUp = new ();
     public UnityEvent onChangeTriggerButtonDown => m_OnChangeTriggerButtonDown;
     public UnityEvent OnChangeTriggerButtonUp => m_OnChangeTriggerButtonUp;
-
-    #endregion
 
     public Vector2 MoveInput
     {
