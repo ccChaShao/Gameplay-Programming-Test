@@ -14,7 +14,7 @@ namespace Charsiew
         
         [LabelText("鼠标灵敏度")] public float mouseSensitivity;
 
-        [LabelText("最大移动速度")] public float maxForwardSpeed;
+        [LabelText("最大移动速度"), PropertyRange(0, 10)] public float maxForwardSpeed;
     }
 }
 

@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class BulletControler : MonoBehaviour
 {
+    public string poolTag;
     public float damge;
     public float bulletSpeed;
     public float aliveTime;
@@ -14,8 +15,9 @@ public class BulletControler : MonoBehaviour
     
     private Coroutine m_aliveCoroutine;
 
-    public void DataInit(float bulletSpeed, float damge, float aliveTime, LayerMask colliderLayer)
+    public void DataInit(string poolTag,float bulletSpeed, float damge, float aliveTime, LayerMask colliderLayer)
     {
+        this.poolTag = poolTag;
         this.bulletSpeed = bulletSpeed;
         this.damge = damge;
         this.aliveTime = aliveTime;
@@ -35,11 +37,12 @@ public class BulletControler : MonoBehaviour
         if (m_aliveCoroutine != null)
             StopCoroutine(m_aliveCoroutine);
     }
+    
+    
 
     private IEnumerator IEAlive()
     {
         yield return new WaitForSeconds(aliveTime);
-        // 后续应该改成对象池，来不及了
-        Destroy(gameObject);
+        ObjectPool.Instance.ReturnToPool(poolTag, gameObject);
     }
 }

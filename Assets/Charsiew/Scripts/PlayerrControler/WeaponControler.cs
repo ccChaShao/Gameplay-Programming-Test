@@ -317,11 +317,14 @@ namespace Gamekit3D
             var weaponConfig = data.weaponConfig;
             
             // 执行射击
-            GameObject bullet = Instantiate(weaponConfig.bulletPrefab);
-            bullet.transform.position = muzzle.position;
-            bullet.transform.rotation = Quaternion.LookRotation(shootDirection);
+            GameObject bullet = ObjectPool.Instance.SpawnFromPool(
+                weaponConfig.bulletPrefab.name,
+                muzzle.position,
+                Quaternion.LookRotation(shootDirection)
+            );
             BulletControler bulletControler = bullet.AddComponent<BulletControler>();
             bulletControler.DataInit(
+                weaponConfig.bulletPrefab.name,
                 weaponConfig.bulletSpeed,
                 weaponConfig.damge,
                 weaponConfig.bulletAlive,

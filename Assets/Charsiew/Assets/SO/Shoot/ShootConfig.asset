@@ -17,4 +17,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294954807
   mouseSensitivity: 500
-  maxForwardSpeed: 0
+  maxForwardSpeed: 4.01

@@ -343,8 +343,10 @@ namespace Gamekit3D
             if (moveInput.sqrMagnitude > 1f)
                 moveInput.Normalize();
 
+            float speed = currentState == CharacterState.ShotState ? shootConfig.maxForwardSpeed : maxForwardSpeed;
+            
             // Calculate the speed intended by input.
-            m_DesiredForwardSpeed = moveInput.magnitude * maxForwardSpeed;
+            m_DesiredForwardSpeed = moveInput.magnitude * speed;
 
             // Determine change to speed based on whether there is currently any move input.
             float acceleration = IsMoveInput ? k_GroundAcceleration : k_GroundDeceleration;
