@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Charsiew;
 using System;
+using UnityEditor;
 using UnityEngine.Serialization;
 
 namespace Gamekit3D
@@ -408,5 +409,40 @@ namespace Gamekit3D
         private void OnChangeTriggerButtonDown() { }
 
         private void OnChangeTriggerButtonUp() { }
+
+        private void DrawWeaponState(WeaponIndex index, ref Vector2 startPos)
+        {
+            var data = EnsureWeaponData(index);
+            if (data == null)
+                return;
+            
+            float vHeight = 20;
+            
+            startPos.Set(startPos.x, startPos.y + vHeight);
+            GUI.Label(new Rect(startPos.x, startPos.y, 200, vHeight), $"子弹数量：{data.bulletCount}");
+            startPos.Set(startPos.x, startPos.y + vHeight);
+            GUI.Toggle(new Rect(startPos.x, startPos.y, 200, vHeight), data.isBlockAttack, "武器锁状态：");
+            startPos.Set(startPos.x, startPos.y + vHeight);
+            GUI.Toggle(new Rect(startPos.x, startPos.y, 200, vHeight), data.isBlockReload, "上单锁状态：");
+        }
+
+        private void OnGUI()
+        {
+            Vector2 startPos = Vector2.zero;
+            float vHeight = 20;
+            
+            // 基本状态信息
+            GUI.Toggle(new Rect(startPos.x, startPos.y, 200, vHeight), currentState == CharacterState.ShotState, "瞄准状态");
+            
+            // 二号武器信息
+            startPos.Set(startPos.x, startPos.y + 50);
+            GUI.Label(new Rect(startPos.x, startPos.y, 200, vHeight), "二号武器槽状态");
+            DrawWeaponState(WeaponIndex.Second, ref startPos);
+            
+            // 三号武器信息
+            startPos.Set(startPos.x, startPos.y + 50);
+            GUI.Label(new Rect(startPos.x, startPos.y, 200, vHeight), "三号武器槽状态");
+            DrawWeaponState(WeaponIndex.Third, ref startPos);
+        }
     }
 }
